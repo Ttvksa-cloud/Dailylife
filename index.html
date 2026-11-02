@@ -1,241 +1,664 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مساحتي المالية</title>
-<style>
-:root{--bg:#f7f5fb;--ink:#25233a;--card:#fff;--muted:#77758a;--line:#e9e5f0;--purple:#8050e8;--blue:#20b9d5;--pink:#ef5b91;--green:#16a765;--orange:#f6b84e}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif}header{background:linear-gradient(120deg,#6740d7,#a76ce9);color:white;padding:28px 18px}header .wrap,main{max-width:1100px;margin:auto}h1{margin:0 0 8px;font-size:29px}header p{margin:0;opacity:.9}.pill{display:inline-block;background:#ffffff27;padding:8px 12px;border-radius:20px;margin-top:15px;font-size:13px}
-main{padding:20px 15px 50px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 5px 20px #34205c08}.stat .label{color:var(--muted);font-size:13px}.stat strong{display:block;font-size:25px;margin-top:9px}.section{margin-top:18px}.section h2{font-size:19px;margin:0 0 13px}.cols{display:grid;grid-template-columns:1.05fr .95fr;gap:15px}.field{margin-bottom:12px}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px solid #ddd6e9;border-radius:10px;background:white;color:var(--ink)}button{border:0;border-radius:10px;padding:11px 14px;background:var(--purple);color:#fff;cursor:pointer;font-weight:bold}button.secondary{background:#eee8fa;color:#5d3bb2}button.danger{background:#ffe8ee;color:#b72e57}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hint{font-size:12px;color:var(--muted);line-height:1.7}.alloc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.allocation{border-radius:13px;padding:13px;background:#fff;border:1px solid var(--line);border-right:5px solid var(--c)}.allocation .top{display:flex;justify-content:space-between;gap:8px;font-weight:bold}.allocation input{margin-top:9px}.bar{height:8px;background:#eeeaf4;border-radius:9px;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;background:var(--c);width:0}.tag{display:inline-block;padding:4px 8px;border-radius:20px;font-size:12px;background:#f0eafc;color:#6040ad}.transactions{overflow:auto}table{border-collapse:collapse;width:100%;min-width:650px;font-size:13px}th,td{padding:11px 9px;border-bottom:1px solid var(--line);text-align:right}th{background:#f6f2fc;color:#655b7a}td small{color:var(--muted)}.income{color:#098a52}.expense{color:#d14470}.notice{padding:12px;border-radius:12px;background:#fff7df;color:#79590b;font-size:13px;line-height:1.7}.actions{display:flex;gap:8px;flex-wrap:wrap}.empty{text-align:center;padding:24px;color:var(--muted)}.recap{background:linear-gradient(135deg,#f0eaff,#fff);border-radius:14px;padding:16px;margin-top:12px;line-height:1.9}.smallbtn{padding:7px 9px;font-size:12px}.goalbox{background:linear-gradient(135deg,#f3eaff,#fff0f7);border:1px solid #e4d4ff;border-radius:17px;padding:18px}.goalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.goalnum{font-size:27px;font-weight:bold;color:#7544cf}.goaltrack{height:13px;background:#e7dcf7;border-radius:20px;overflow:hidden;margin:12px 0}.goaltrack span{display:block;height:100%;width:0;background:linear-gradient(90deg,#9d71ee,#ef8dbd);border-radius:20px}.goalinputs{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}@media(max-width:600px){.goalinputs{grid-template-columns:1fr 1fr}.goalinputs button{grid-column:1/-1}}
-.ytile{background:#fff;border:1px solid var(--line);border-right:5px solid var(--c);border-radius:14px;padding:14px}.ytile span{display:block;color:var(--muted);font-size:13px}.ytile strong{display:block;font-size:22px;margin-top:8px;color:var(--c)}.yh{font-size:15px;margin:0 0 10px}.mrow{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:start;margin-bottom:12px;font-size:13px;font-weight:bold}.mbars{display:flex;flex-direction:column;gap:3px}.mbar{height:10px;border-radius:9px;min-width:3px}.mval{font-size:11px;font-weight:normal}.crow{margin-bottom:12px;font-size:13px}.crow .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:2px}.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:10px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:5px}
-.share{margin-top:10px;padding:9px 10px;border-radius:10px;background:#f6f2fc;font-size:13px;line-height:1.9}
-.goalinputs.vat4{grid-template-columns:1fr 1fr 1fr auto}@media(max-width:600px){.goalinputs.vat4{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}.alloc{grid-template-columns:1fr}h1{font-size:24px}.stat strong{font-size:21px}}
-</style></head>
-<body>
-<header><div class="wrap"><h1>💜 مساحتي المالية</h1><p>أنتِ أدخلي المبلغ فقط، وخلي الحسابات والتوزيع عليّ.</p><span class="pill" id="today"></span></div></header>
-<main>
-<div class="grid">
-<div class="card stat"><div class="label">إجمالي الأرباح</div><strong id="totalIn">0 ر.س</strong></div>
-<div class="card stat"><div class="label">إجمالي المصروفات</div><strong id="totalOut">0 ر.س</strong></div>
-<div class="card stat"><div class="label">الموزّع للفئات من الأرباح</div><strong id="allocated">0 ر.س</strong></div>
-<div class="card stat"><div class="label">المتبقي بعد المصروفات</div><strong id="balance">0 ر.س</strong></div>
-</div>
-<section class="goalbox section">
- <div class="goalhead"><div><h2 style="margin:0 0 6px">🐷 هدفي الادخاري</h2><div class="hint">حددي هدفك، وسجّلي أي مبلغ تضيفينه لمدخراتك.</div></div><span class="tag">هدفك يتحدّث تلقائيًا</span></div>
- <div class="goalhead" style="margin-top:16px"><div><div class="hint">مدخراتك الحالية</div><div class="goalnum" id="savedNow">0 ر.س</div></div><div><div class="hint">هدفك</div><div class="goalnum" id="goalTargetText">10,000 ر.س</div></div><div><div class="hint">المتبقي</div><strong id="goalLeft">10,000 ر.س</strong></div></div>
- <div class="goaltrack"><span id="goalProgress"></span></div><div class="hint" id="goalPercent">0% من الهدف</div>
- <div class="goalinputs" style="margin-top:14px">
-  <div class="field"><label>هدف الادخار (ريال)</label><input id="goalTarget" type="number" min="1" step="1" value="10000"></div>
-  <div class="field"><label>مبلغ أضيفه لمدخراتي</label><input id="goalAddAmount" type="number" min="0.01" step="0.01" placeholder="مثلاً 50"></div>
-  <button id="addSavings">＋ إضافة للادخار</button>
- </div>
- <div class="hint">الإضافة هنا تسجّل مبلغًا في هدف الادخار فقط؛ لا تحوّل أموالًا بين حسابات بنكية.</div>
-</section>
-<div class="cols section">
-<section class="card"><h2>✨ إضافة عملية</h2>
-<div class="row"><div class="field"><label>نوع العملية</label><select id="type"><option value="income">ربح / دخل جديد</option><option value="expense">مصروف</option></select></div><div class="field"><label>المبلغ (ريال)</label><input id="amount" type="number" min="0.01" step="0.01" placeholder="مثلاً 150"></div></div>
-<div class="field"><label>وش العملية؟</label><input id="desc" placeholder="مثلاً: ربح طلبات المتجر، قهوة، لعبة"></div>
-<div class="row"><div class="field"><label>الفئة</label><select id="category"></select></div><div class="field"><label>المصدر / ملاحظة (اختياري)</label><input id="source" placeholder="مثلاً: المتجر أو اسم اللعبة"></div></div>
-<div class="notice" id="autoNote">أرباح المتجر ستتوزع تلقائيًا حسب نسب الفئات الموجودة في إعداداتك. سجل الدخل مرة واحدة فقط.</div>
-<button id="add">＋ احفظ العملية</button> <span class="hint">سيُحفظ تاريخ ووقت العملية تلقائيًا.</span>
-</section>
-<section class="card"><h2>🎨 إعدادات توزيع أرباح المتجر</h2><p class="hint">النسب الظاهرة في الصورة: الأزرق 50%، الوردي 35%، الأخضر 10%، والبرتقالي 5%. غيّري أسماء الفئات أو نسبها هنا. البنفسجي هو لون الموقع.</p>
-<div class="alloc" id="allocations"></div><p id="sum" class="hint"></p><div class="actions"><button id="saveSettings">حفظ إعداداتي</button><button class="secondary" id="resetSettings">إرجاع نسب الصورة</button></div>
-<p class="hint">عند إدخال ربح جديد، يحسب الموقع نصيب كل فئة تلقائيًا ويعرضه هنا. التوزيع هنا حسابي للمتابعة، ولا ينقل المال فعليًا بين حسابات بنكية.</p>
-</section></div>
-<section class="card section"><h2>🧾 إدارة المصاريف</h2>
-<div class="row"><div class="field"><label>اسم الشيء</label><input id="expName" placeholder="مثلاً: لعبة"></div><div class="field"><label>السعر الفعلي (ريال)</label><input id="expPrice" type="number" min="0" step="0.01" placeholder="مثلاً 120"></div></div>
-<div class="row"><div class="field"><label>الرسوم (ريال)</label><input id="expFee" type="number" min="0" step="0.01" placeholder="مثلاً 2"></div><div class="field"><label>الإجمالي (يُحسب تلقائيًا)</label><input id="expTotal" readonly value="0 ر.س"></div></div>
-<div class="row"><div class="field"><label>ضريبة القيمة المضافة 15%</label><select id="expVat"><option value="none">بدون ضريبة</option><option value="add">السعر بدون ضريبة (تُضاف 15%)</option><option value="incl">السعر شامل الضريبة</option></select></div><div class="field"><label>مبلغ الضريبة (يُحسب تلقائيًا)</label><input id="expVatAmt" readonly value="—"></div></div>
-<button id="addExp">＋ سجّلي المصروف</button> <span class="hint">يُسجَّل التاريخ والوقت تلقائيًا، ويُحسب ضمن إجمالي المصروفات.</span>
-<h2 style="margin-top:20px">📋 سجل مصاريفك</h2><div class="transactions"><table><thead><tr><th>التاريخ والوقت</th><th>الشيء</th><th>السعر</th><th>الرسوم</th><th>الضريبة</th><th>الإجمالي</th><th></th></tr></thead><tbody id="expRows"></tbody></table></div><div id="expEmpty" class="empty">ما سجلتِ مصاريف بعد 💗</div></section>
-<section class="card section"><h2>🎀 قوائمي</h2>
-<p class="hint">قوائم منفصلة عشان ما تختلط أغراضك. اختاري قائمة أو أنشئي قائمة خاصة من اختيارك.</p>
-<div class="actions" id="listTabs" style="margin-bottom:14px"></div>
-<div class="row"><div class="field"><label>اسم قائمة جديدة</label><input id="newListName" placeholder="مثلاً: هدايا الأهل"></div><div class="field"><label>&nbsp;</label><button class="secondary" id="addList">＋ إنشاء قائمة</button></div></div>
-<div id="listBody"></div></section>
-<section class="card section"><h2>🧾 سجل العمليات <span class="tag">التاريخ والوقت تلقائيان</span></h2><div class="actions" style="margin-bottom:12px"><button class="secondary" id="export">نسخة احتياطية</button><label class="secondary" style="display:inline-block;padding:11px 14px;border-radius:10px;cursor:pointer">استعادة نسخة<input id="restore" type="file" accept="application/json" hidden></label></div><div class="transactions"><table><thead><tr><th>التاريخ والوقت</th><th>العملية</th><th>النوع</th><th>الفئة</th><th>المبلغ</th><th></th></tr></thead><tbody id="rows"></tbody></table></div><div id="empty" class="empty">لسه ما أضفتِ عمليات. ابدئي بإضافة ربح أو مصروف 💗</div></section>
-<section class="card section"><h2>📊 ملخص السنة <span class="tag" id="yearTag"></span></h2>
-<div class="grid">
-<div class="ytile" style="--c:#16a765"><span>دخل السنة</span><strong id="yearIn">0 ر.س</strong></div>
-<div class="ytile" style="--c:#d14470"><span>صرف السنة</span><strong id="yearOut">0 ر.س</strong></div>
-<div class="ytile" style="--c:#8050e8"><span>الصافي (دخل − صرف)</span><strong id="yearNet">0 ر.س</strong></div>
-<div class="ytile" style="--c:#20b9d5"><span>عدد العمليات</span><strong id="yearCount">0</strong></div>
-</div>
-<div class="cols" style="margin-top:18px">
-<div><h3 class="yh">📅 حسب الأشهر</h3><div class="legend"><span><i style="background:#16a765"></i>دخل</span><span><i style="background:#ef5b91"></i>صرف</span></div><div id="monthChart"></div></div>
-<div><h3 class="yh">🏷️ المصروف حسب الفئة</h3><div id="catChart"></div><div class="hint" style="margin-top:6px">أكثر فئة صرفًا: <strong id="topCat">—</strong></div></div>
-</div>
-<div class="recap" id="recap">ملخصك السنوي بيتحدّث تلقائيًا كلما أضفتِ عمليات.</div></section>
-</main>
-<script>
-const defaults=[
-{id:'blue',name:'الفئة الزرقاء',color:'#20b9d5',pct:50},
-{id:'pink',name:'الفئة الوردية',color:'#ef5b91',pct:35},
-{id:'green',name:'الفئة الخضراء',color:'#16a765',pct:10},
-{id:'orange',name:'الفئة البرتقالية',color:'#f6b84e',pct:5}
-];
-const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
-const defaultLists=[
-{id:'groc',name:'أغراض السوبرماركت',icon:'🛒',items:[]},
-{id:'care',name:'العناية الشخصية',icon:'🧴',items:[]},
-{id:'games',name:'الألعاب والمشتريات الإلكترونية',icon:'🎮',items:[]},
-{id:'later',name:'أشياء أبي أشتريها لاحقًا',icon:'🎁',items:[]}
-];
-let cats=load('masahati_cats',defaults), tx=load('masahati_tx',[]), goal=load('masahati_goal',{target:10000,saved:0}), lists=load('masahati_lists',defaultLists);
-const $=id=>document.getElementById(id), money=n=>Number(n||0).toLocaleString('ar-SA',{maximumFractionDigits:2})+' ر.س';
-function save(){localStorage.setItem('masahati_cats',JSON.stringify(cats));localStorage.setItem('masahati_tx',JSON.stringify(tx));localStorage.setItem('masahati_goal',JSON.stringify(goal));localStorage.setItem('masahati_lists',JSON.stringify(lists))}
-function dateText(d){return new Date(d).toLocaleString('ar-SA',{dateStyle:'medium',timeStyle:'short'})}
-function renderSettings(){
-$('allocations').innerHTML=cats.map((c,i)=>`<div class="allocation" style="--c:${c.color}"><div class="top"><span>${c.name}</span><span>${c.pct}%</span></div><input aria-label="اسم الفئة" data-name="${i}" value="${c.name}" placeholder="اسم الفئة"><div class="row"><div><label class="hint">النسبة %</label><input type="number" min="0" max="100" data-pct="${i}" value="${c.pct}"></div><div><label class="hint">لون الفئة</label><input type="color" data-color="${i}" value="${c.color}"></div></div><div class="share" data-share="${i}"></div></div>`).join('');
-$('category').innerHTML='<option value="all">كل الفئات (توزيع تلقائي بالنسب)</option>'+cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')+'<option value="twitch">تويتش</option><option value="other">أخرى</option>';updateSum();syncType()}
-function syncType(){let c=$('category');if($('type').value==='income'){c.value='all';c.disabled=true}else c.disabled=false}
-$('type').onchange=syncType;
-function updateSum(){let s=cats.reduce((a,c)=>a+Number(c.pct||0),0);$('sum').textContent=`مجموع النسب: ${s}% ${s===100?'✅ ممتاز، التوزيع متوازن.':'⚠️ لازم يكون المجموع 100% عشان يتوزع الربح بالكامل.'}`}
-function renderGoal(){
- goal.target=Math.max(1,Number(goal.target)||10000);goal.saved=Math.max(0,Number(goal.saved)||0);
- $('goalTarget').value=goal.target;
- $('savedNow').textContent=money(goal.saved);$('goalTargetText').textContent=money(goal.target);
- $('goalLeft').textContent=money(Math.max(0,goal.target-goal.saved));
- let pct=Math.min(100,goal.saved/goal.target*100);$('goalProgress').style.width=pct+'%';
- $('goalPercent').textContent=(Math.round(pct*10)/10)+'% من الهدف'+(pct>=100?' 🎉 وصلتي لهدفك!':'');
-}
-const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-function catLabel(id){return id==='all'||id==='auto'?'كل الفئات':id==='twitch'?'تويتش':id==='other'?'أخرى':(cats.find(c=>c.id===id)?.name||id||'أخرى')}
-function renderYear(y,yt,yi,yo,sums){
- $('yearNet').textContent=money(yi-yo);$('yearTag').textContent=y;
- let inM=Array(12).fill(0),outM=Array(12).fill(0);
- yt.forEach(t=>{let m=new Date(t.date).getMonth();(t.type==='income'?inM:outM)[m]+=t.amount});
- let mx=Math.max(1,...inM,...outM),rows=MONTHS.map((n,m)=>(inM[m]||outM[m])?`<div class="mrow"><span>${n}</span><div class="mbars"><div class="mbar" style="width:${inM[m]/mx*100}%;background:#16a765"></div><div class="mval income">+ ${money(inM[m])}</div><div class="mbar" style="width:${outM[m]/mx*100}%;background:#ef5b91"></div><div class="mval expense">− ${money(outM[m])}</div></div></div>`:'').join('');
- $('monthChart').innerHTML=rows||'<div class="empty">ما فيه عمليات هالسنة بعد 💗</div>';
- let ents=Object.entries(sums).sort((a,b)=>b[1]-a[1]),tot=ents.reduce((a,e)=>a+e[1],0)||1;
- $('catChart').innerHTML=ents.length?ents.map(([id,v])=>{let col=cats.find(c=>c.id===id)?.color||(id==='twitch'?'#9146ff':'#8050e8');return `<div class="crow"><div class="top"><span>${esc(catLabel(id))}</span><span>${money(v)} · ${Math.round(v/tot*100)}%</span></div><div class="bar" style="--c:${col}"><span style="width:${v/tot*100}%"></span></div></div>`}).join(''):'<div class="empty">ما فيه مصروفات هالسنة بعد 💗</div>';
-}
-function updateShares(){
- let ins=tx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
- cats.forEach((c,i)=>{let el=document.querySelector(`[data-share="${i}"]`);if(!el)return;
-  let share=ins*Number(c.pct||0)/100,spent=tx.filter(t=>t.type==='expense').reduce((a,t)=>a+(t.category===c.id?t.amount:t.category==='all'?t.amount*Number(c.pct||0)/100:0),0);
-  el.innerHTML=`نصيبها من الأرباح: <strong>${money(share)}</strong><br>صُرف منها: ${money(spent)} · المتبقي: <strong>${money(share-spent)}</strong>`});
-}
-function render(){
-renderGoal();
-let ins=tx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0),outs=tx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-$('totalIn').textContent=money(ins);$('totalOut').textContent=money(outs);$('balance').textContent=money(ins-outs);
-$('allocated').textContent=money(ins*cats.reduce((a,c)=>a+Number(c.pct),0)/100);
-$('rows').innerHTML=tx.slice().reverse().map(t=>`<tr><td>${dateText(t.date)}</td><td>${esc(t.desc)}<br><small>${esc(t.source||'')}</small>${t.type==='income'?'<br><small>'+cats.map(c=>esc(c.name)+' '+money(t.amount*Number(c.pct||0)/100)).join(' · ')+'</small>':''}</td><td class="${t.type}">${t.type==='income'?'دخل':'مصروف'}</td><td>${esc(catLabel(t.category))}</td><td class="${t.type}">${t.type==='income'?'+':'−'} ${money(t.amount)}</td><td><button class="danger smallbtn" data-del="${t.id}">حذف</button></td></tr>`).join('');
-$('empty').style.display=tx.length?'none':'block';
-renderExp();updateShares();
-let y=new Date().getFullYear(),yt=tx.filter(t=>new Date(t.date).getFullYear()===y),yi=yt.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0),yo=yt.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-$('yearIn').textContent=money(yi);$('yearOut').textContent=money(yo);$('yearCount').textContent=yt.length;
-let sums={};yt.filter(t=>t.type==='expense').forEach(t=>sums[t.category]=(sums[t.category]||0)+t.amount);let top=Object.entries(sums).sort((a,b)=>b[1]-a[1])[0];
-$('topCat').textContent=top?catLabel(top[0]):'—';
-$('recap').textContent=`في ${y}: دخلتي ${money(yi)} وصرفتي ${money(yo)}، والمتبقي حسابيًا ${money(yi-yo)}. عند تسجيل عمليات أكثر، يتكوّن ملخصك تلقائيًا.`;
-renderYear(y,yt,yi,yo,sums);
-}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-$('saveSettings').onclick=()=>{cats.forEach((c,i)=>{c.name=$(`[data-name="${i}"]`).value.trim()||`فئة ${i+1}`;c.pct=Number($(`[data-pct="${i}"]`).value)||0;c.color=$(`[data-color="${i}"]`).value});save();renderSettings();render();alert('انحفظت إعداداتك 💜')};
-$('resetSettings').onclick=()=>{cats=JSON.parse(JSON.stringify(defaults));save();renderSettings();render()};
-$('add').onclick=()=>{let amount=Number($('amount').value),desc=$('desc').value.trim(),type=$('type').value;if(!amount||amount<=0||!desc){alert('اكتبي المبلغ ووصف العملية أولًا 💗');return}
-let category=type==='income'?'auto':$('category').value;
-if(type==='expense'){let words=desc.toLowerCase();if(/قهوة|مطعم|أكل|اكل|مشروب|كافيه/.test(words))category=cats.find(c=>/أكل|قهوة|طعام|food/i.test(c.name))?.id||category;else if(/لعبة|قيم|game|ستيم|بلايستيشن/.test(words))category=cats.find(c=>/ترفيه|ألعاب|العاب|لعب/i.test(c.name))?.id||category;}
-tx.push({id:Date.now(),date:new Date().toISOString(),type,amount,desc,category,source:$('source').value.trim()});
-if(type==='income'&&cats.reduce((a,c)=>a+Number(c.pct),0)!==100){alert('تنبيه: مجموع نسب التوزيع ليس 100%. عدّلي النسب في الإعدادات.')}
-save();render();$('amount').value='';$('desc').value='';$('source').value='';alert(type==='income'?'انضاف الربح وتوزّع على الفئات دفعة وحدة 💸\n'+cats.map(c=>c.name+': '+money(amount*Number(c.pct||0)/100)).join('\n'):'انضاف المصروف وحُفظ تاريخه ووقته 💗')};
-$('rows').onclick=e=>{let b=e.target.closest('[data-del]');if(b&&confirm('متأكدة تبين تحذفين العملية؟')){tx=tx.filter(t=>String(t.id)!==b.dataset.del);save();render()}};
-$('export').onclick=()=>{let blob=new Blob([JSON.stringify({cats,tx,goal,lists},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='masahati-backup.json';a.click();URL.revokeObjectURL(a.href)};
-$('goalTarget').onchange=()=>{goal.target=Math.max(1,Number($('goalTarget').value)||10000);save();renderGoal()};
-$('addSavings').onclick=()=>{let n=Number($('goalAddAmount').value);if(!n||n<=0){alert('اكتبي مبلغ الادخار أولًا 💗');return}goal.saved+=n;save();renderGoal();$('goalAddAmount').value='';alert('انضاف المبلغ لهدف ادخارك 💜')};
-$('restore').onchange=async e=>{try{let data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.tx)||!Array.isArray(data.cats))throw 0;cats=data.cats;tx=data.tx;if(data.goal)goal=data.goal;if(Array.isArray(data.lists))lists=data.lists;save();renderSettings();render();renderLists();alert('تمت استعادة النسخة 💜')}catch{alert('الملف غير صالح')}}; 
-function renderExp(){
- let list=tx.filter(t=>t.type==='expense'&&t.managed).reverse();
- $('expRows').innerHTML=list.map(t=>`<tr><td>${dateText(t.date)}</td><td>${esc(t.desc)}</td><td>${money(t.price)}</td><td>${money(t.fee)}</td><td>${t.vat?money(t.vat)+(t.vatMode==='incl'?'<br><small>شاملة</small>':''):'—'}</td><td class="expense"><strong>${money(t.amount)}</strong></td><td><button class="danger smallbtn" data-delexp="${t.id}">حذف</button></td></tr>`).join('');
- $('expEmpty').style.display=list.length?'none':'block';
- }
-let expLock=false;
-const VAT=0.15;
-function vatOf(p,m){return m==='add'?Math.round(p*VAT*100)/100:m==='incl'?Math.round(p*VAT/(1+VAT)*100)/100:0}
-function calcExpTotal(){
- let p=Number($('expPrice').value)||0,f=Number($('expFee').value)||0;
- let m=$('expVat').value,v=vatOf(p,m);
- $('expTotal').value=money(p+f+(m==='add'?v:0));
- $('expVatAmt').value=m==='none'?'—':money(v);
- }
-$('expPrice').oninput=calcExpTotal;$('expFee').oninput=calcExpTotal;$('expVat').onchange=calcExpTotal;
-$('addExp').onclick=()=>{
- let name=$('expName').value.trim(),price=Number($('expPrice').value)||0,fee=Number($('expFee').value)||0;
-  if(!name||price<=0||fee<0){alert('اكتبي اسم الشيء وسعره الفعلي أولًا 💗');return}
- if(expLock)return;
- let now=Date.now(),dup=tx.find(t=>t.managed&&t.desc===name&&t.price===price&&t.fee===fee&&now-t.id<5*60*1000);
- if(dup&&!confirm('نفس المصروف انسجّل قبل دقائق. تبين تسجلينه مرة ثانية؟'))return;
- expLock=true;setTimeout(()=>{expLock=false},1500);
- let vm=$('expVat').value,vat=vatOf(price,vm);
-  tx.push({id:Date.now(),date:new Date().toISOString(),type:'expense',amount:Math.round((price+fee+(vm==='add'?vat:0))*100)/100,price,fee,vat,vatMode:vm,desc:name,category:'other',source:`السعر ${price} + رسوم ${fee}`+(vat?` + ضريبة ${vat}${vm==='incl'?' (شاملة)':''}`:''),managed:true});
- save();render();$('expName').value='';$('expPrice').value='';$('expFee').value='';calcExpTotal();
- alert('انضاف المصروف وحُفظ تاريخه ووقته 💗');
-};
-$('expRows').onclick=e=>{let b=e.target.closest('[data-delexp]');if(b&&confirm('متأكدة تبين تحذفين المصروف؟')){tx=tx.filter(t=>String(t.id)!==b.dataset.delexp);save();render()}};
-let curList=lists[0]&&lists[0].id;
-function renderLists(){
- if(!lists.find(l=>l.id===curList))curList=lists[0]&&lists[0].id;
- $('listTabs').innerHTML=lists.map(l=>`<button class="${l.id===curList?'':'secondary'}" data-tab="${l.id}">${l.icon} ${esc(l.name)}</button>`).join('');
- let l=lists.find(x=>x.id===curList);
- if(!l){$('listBody').innerHTML='<div class="empty">ما فيه قوائم، أنشئي وحدة 💗</div>';return}
- let open=l.items.filter(i=>!i.done).reduce((a,i)=>a+(i.total??i.price??0),0);
- $('listBody').innerHTML=`<div class="goalhead"><strong>${l.icon} ${esc(l.name)}</strong><div class="actions"><button class="secondary smallbtn" data-img="1">📷 حفظ القائمة كصورة</button>${l.custom?`<button class="danger smallbtn" data-dellist="${l.id}">حذف القائمة</button>`:''}</div></div>
- <div class="goalinputs ${l.id==='later'?'vat4':''}" style="margin:12px 0"><div class="field"><label>الغرض</label><input id="itemText" placeholder="مثلاً: حليب"></div><div class="field"><label>السعر التقريبي (اختياري)</label><input id="itemPrice" type="number" min="0" step="0.01"></div>${l.id==='later'?`<div class="field"><label>ضريبة القيمة المضافة 15%</label><select id="itemVat"><option value="none">بدون ضريبة</option><option value="add">السعر بدون ضريبة (تُضاف 15%)</option><option value="incl">السعر شامل الضريبة</option></select></div>`:''}<button id="addItem">＋ إضافة</button></div>`
- +(l.items.length?l.items.map(i=>`<div class="allocation" style="--c:${i.done?'#16a765':'#8050e8'};margin-bottom:8px"><div class="top"><label style="display:flex;gap:8px;align-items:center;${i.done?'text-decoration:line-through;opacity:.6':''}"><input type="checkbox" style="width:auto;margin:0" data-chk="${i.id}" ${i.done?'checked':''}>${esc(i.text)}</label><span style="text-align:left">${i.price?money(i.total??i.price)+(i.vatMode&&i.vatMode!=='none'?`<br><small>${i.vatMode==='incl'?'شامل الضريبة':'مع الضريبة'} (ضريبة ${money(i.vat)})</small>`:''):''}</span></div><div class="actions" style="margin-top:8px"><button class="secondary smallbtn" data-toexp="${i.id}">سجّليه كمصروف</button><button class="danger smallbtn" data-delitem="${i.id}">حذف</button></div></div>`).join(''):'<div class="empty">القائمة فاضية 💗</div>')
- +`<div class="hint">تقدير المتبقي في القائمة: ${money(open)}</div>`;
-}
-function saveListImage(l){
- if(!l.items.length){alert('القائمة فاضية، أضيفي أغراض أولًا 💗');return}
- const W=900,pad=40,rowH=68,headH=150,footH=100,sc=2,H=headH+l.items.length*rowH+footH;
- const cv=document.createElement('canvas');cv.width=W*sc;cv.height=H*sc;
- const c=cv.getContext('2d');c.scale(sc,sc);c.direction='rtl';c.textBaseline='middle';
- const F='Tahoma,Arial,sans-serif';
- const rr=(x,y,w,h,r)=>{c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()};
- c.fillStyle='#f7f5fb';c.fillRect(0,0,W,H);
- let g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,'#a76ce9');g.addColorStop(1,'#6740d7');
- c.fillStyle=g;c.fillRect(0,0,W,headH-30);
- c.fillStyle='#fff';c.textAlign='right';
- c.font='bold 36px '+F;c.fillText(l.icon+' '+l.name,W-pad,52);
- c.font='20px '+F;c.fillText(dateText(new Date()),W-pad,92);
- l.items.forEach((it,i)=>{
-  let y=headH+i*rowH-10;
-  c.fillStyle='#fff';rr(pad,y,W-pad*2,rowH-12,14);c.fill();
-  c.strokeStyle='#e9e5f0';c.lineWidth=1;c.stroke();
-  let cx=W-pad-32,cy=y+(rowH-12)/2;
-  c.beginPath();c.arc(cx,cy,14,0,Math.PI*2);
-  if(it.done){c.fillStyle='#16a765';c.fill();c.fillStyle='#fff';c.textAlign='center';c.font='bold 18px '+F;c.fillText('✓',cx,cy+1)}
-  else{c.strokeStyle='#8050e8';c.lineWidth=2.5;c.stroke()}
-  c.textAlign='right';c.font='24px '+F;c.fillStyle=it.done?'#9a97aa':'#25233a';
-  let t=it.text,maxW=W-pad*2-190;
-  while(c.measureText(t).width>maxW&&t.length>1)t=t.slice(0,-1);
-  if(t!==it.text)t+='…';
-  let tx0=W-pad-64;c.fillText(t,tx0,cy);
-  if(it.done){let w=c.measureText(t).width;c.strokeStyle='#9a97aa';c.lineWidth=2;c.beginPath();c.moveTo(tx0,cy);c.lineTo(tx0-w,cy);c.stroke()}
-  if(it.price){c.textAlign='left';c.fillStyle='#7544cf';c.font='bold 22px '+F;c.fillText(money(it.total??it.price)+(it.vatMode==='incl'?' (شامل الضريبة)':it.vatMode==='add'?' (مع الضريبة)':''),pad+24,cy)}
- });
- let open=l.items.filter(i=>!i.done).reduce((a,i)=>a+(i.total??i.price??0),0),left=l.items.filter(i=>!i.done).length;
- c.textAlign='right';c.fillStyle='#77758a';c.font='20px '+F;
- c.fillText(`المتبقي: ${left} من ${l.items.length}`+(open?` — تقدير ${money(open)}`:''),W-pad,H-footH/2+10);
- c.textAlign='left';c.fillText('💜 مساحتي المالية',pad,H-footH/2+10);
- cv.toBlob(b=>{if(!b){alert('تعذّر إنشاء الصورة');return}
-  let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='قائمتي-'+l.name.replace(/[\\/:*?"<>|]/g,'')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
-}
-$('listTabs').onclick=e=>{let b=e.target.closest('[data-tab]');if(b){curList=b.dataset.tab;renderLists()}};
-$('addList').onclick=()=>{let n=$('newListName').value.trim();if(!n){alert('اكتبي اسم القائمة أولًا 💗');return}
- let id='c'+Date.now();lists.push({id,name:n,icon:'📝',custom:true,items:[]});curList=id;$('newListName').value='';save();renderLists()};
-$('listBody').onclick=e=>{
- let l=lists.find(x=>x.id===curList);if(!l)return;
- if(e.target.closest('[data-img]')){saveListImage(l);return}
- if(e.target.closest('#addItem')){let t=$('itemText').value.trim(),p=Number($('itemPrice').value)||0;if(!t){alert('اكتبي اسم الغرض أولًا 💗');return}
-  let vm=$('itemVat')?$('itemVat').value:'none',vat=vatOf(p,vm);l.items.push({id:Date.now(),text:t,price:p,vatMode:vm,vat,total:Math.round((p+(vm==='add'?vat:0))*100)/100,done:false});save();renderLists();return}
- let d=e.target.closest('[data-delitem]');if(d){l.items=l.items.filter(i=>String(i.id)!==d.dataset.delitem);save();renderLists();return}
- let dl=e.target.closest('[data-dellist]');if(dl&&confirm('متأكدة تبين تحذفين القائمة بكل أغراضها؟')){lists=lists.filter(x=>x.id!==l.id);save();renderLists();return}
- let x=e.target.closest('[data-toexp]');if(x){let it=l.items.find(i=>String(i.id)===x.dataset.toexp);if(it){$('expName').value=it.text;$('expPrice').value=it.price||'';$('expVat').value=it.vatMode||'none';calcExpTotal();$('expName').scrollIntoView({behavior:'smooth',block:'center'});$('expPrice').focus()}}
-};
-$('listBody').onchange=e=>{let c=e.target.closest('[data-chk]');if(!c)return;let l=lists.find(x=>x.id===curList),it=l&&l.items.find(i=>String(i.id)===c.dataset.chk);if(it){it.done=c.checked;save();renderLists()}};
-renderLists();
-$('today').textContent='اليوم: '+dateText(new Date());renderSettings();render();
-</script></body></html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NATSUKI November Journal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #fff5f7;
+      background-image: radial-gradient(#fbcfe8 1.2px, transparent 1.2px);
+      background-size: 20px 20px;
+      color: #4a3b4c;
+    }
+    .coquette-panel {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid #fbcfe8;
+      box-shadow: 0 8px 25px rgba(244, 114, 182, 0.08);
+    }
+    .coquette-card {
+      background: #ffffff;
+      border: 1px dashed #f472b6;
+    }
+    .active-tab {
+      background: #f472b6 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(244, 114, 182, 0.35);
+    }
+    .custom-checkbox {
+      accent-color: #f472b6;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .custom-checkbox:checked {
+      transform: scale(1.15);
+    }
+    .animated-pop {
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+  <!-- Pin Screen Modal -->
+  <div id="lockModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/40 backdrop-blur-md">
+    <div class="coquette-panel w-full max-w-sm p-8 rounded-3xl text-center space-y-6 animated-pop">
+      <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mx-auto border border-pink-300 text-pink-500 shadow-sm">
+        <i class="fa-solid fa-cat text-3xl"></i>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-pink-900 mb-1">NATSUKI PRIVATE JOURNAL 🐾</h2>
+        <p class="text-xs text-pink-600">سجلك الشخصي، محفوظ على أجهزتك.</p>
+      </div>
+      <div class="space-y-4">
+        <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="w-full text-center text-3xl tracking-[1em] py-3 bg-pink-50/70 border border-pink-300 rounded-2xl text-pink-900 focus:outline-none focus:border-pink-500 transition">
+        <button onclick="checkPin()" class="w-full py-3 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl shadow-md transition transform active:scale-95">فتح السجل</button>
+        <button onclick="enterGuestMode()" class="w-full py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 text-xs font-medium rounded-2xl transition">تجربة مؤقتة، بلا حفظ 🐾</button>
+      </div>
+      <p id="pinError" class="text-xs text-rose-500 hidden">الرمز السري غير صحيح (الرمز هو 000)</p>
+    </div>
+  </div>
+
+  <!-- Confirm End-Day Modal -->
+  <div id="confirmDayModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/50 backdrop-blur-sm hidden">
+    <div class="coquette-panel w-full max-w-md p-6 rounded-3xl text-center space-y-5 animated-pop border border-pink-300 shadow-2xl">
+      <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto text-pink-500 text-xl border border-pink-200">
+        <i class="fa-regular fa-circle-check"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-pink-900 mb-2">هل انتهيتِ من تسجيل يومك؟</h3>
+        <p class="text-xs text-pink-600 leading-relaxed px-2">
+          ستُحتسب المربعات والصلوات التي لم تسجليها «لم تتم»، خانات الأرقام يجب تعبئتها أولاً، ولا تُحتسب «لا ينطبق» ضمن التقييم. يمكنك تعديل اليوم لاحقاً.
+        </p>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeConfirmModal()" class="w-1/2 py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold rounded-xl transition">العودة للمراجعة</button>
+        <button onclick="finishDayConfirm()" class="w-1/2 py-2.5 bg-pink-400 hover:bg-pink-500 text-white text-xs font-bold rounded-xl shadow-md transition">تأكيد الاعتماد</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div id="appContent" class="max-w-4xl mx-auto px-4 pt-6 space-y-6 hidden">
+    
+    <!-- Header -->
+    <header class="coquette-panel rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-500 border border-pink-300 shadow-sm">
+          <i class="fa-solid fa-cat text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-pink-900 leading-tight">November planner</h1>
+          <p class="text-xs text-pink-500">خطوة كل يوم • مساحتك الصغيرة للنمو 🐾</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex items-center bg-pink-50 p-1.5 rounded-2xl border border-pink-200 text-sm font-medium">
+        <button onclick="switchTab('daily')" id="tab-daily" class="nav-tab active-tab px-4 py-2 rounded-xl transition flex items-center gap-2">
+          <i class="fa-solid fa-sun text-xs"></i> يومي
+        </button>
+        <button onclick="switchTab('monthly')" id="tab-monthly" class="nav-tab px-4 py-2 rounded-xl text-pink-600 hover:text-pink-900 transition flex items-center gap-2">
+          <i class="fa-chart-pie fa-solid text-xs"></i> حصاد الشهر
+        </button>
+        <button onclick="switchTab('info')" id="tab-info" class="nav-tab px-4 py-2 rounded-xl text-pink-600 hover:text-pink-900 transition flex items-center gap-2">
+          <i class="fa-circle-info fa-solid text-xs"></i> كيف تُحسب النسبة؟
+        </button>
+      </div>
+
+      <!-- Actions & Audio Toggle -->
+      <div class="flex items-center gap-2 text-xs">
+        <button onclick="openAudioModal()" class="px-3 py-1.5 rounded-xl bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-300 transition flex items-center gap-1.5 font-medium">
+          <i class="fa-solid fa-music"></i> <span id="audioButtonText">الصوت مغلق</span>
+        </button>
+        <button onclick="logout()" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition">
+          تسجيل الخروج
+        </button>
+      </div>
+    </header>
+
+    <!-- TAB 1: DAILY VIEW -->
+    <main id="view-daily" class="space-y-6">
+      
+      <!-- Inspirational Card -->
+      <div class="coquette-panel p-6 rounded-3xl text-center space-y-2 border border-pink-200">
+        <span class="text-[11px] tracking-widest uppercase text-pink-400 font-bold">A LITTLE BETTER, EVERY DAY 🐾</span>
+        <h2 class="text-2xl font-extrabold text-pink-900">بداية صغيرة، ونور كبير ينتظرك.</h2>
+        <p class="text-xs text-pink-600">هذه مساحتك لتعنتي بنفسك وبأهدافك.</p>
+      </div>
+
+      <!-- Weather & Time (Tabuk) -->
+      <div class="coquette-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-pink-500 text-lg border border-pink-200">
+            <i class="fa-solid fa-cloud-sun"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-pink-900">تبوك</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-md bg-pink-100 text-pink-700 border border-pink-200">غائم</span>
+            </div>
+            <div id="liveClock" class="text-base font-extrabold text-pink-800 tracking-wide">08:00:00 ص</div>
+          </div>
+        </div>
+        <p class="text-xs text-pink-500 bg-pink-50 px-3 py-1.5 rounded-xl border border-pink-200">
+          وقت التسجيل يظهر بجانب البنود لا يحدد وقت أدائها تلقائياً
+        </p>
+      </div>
+
+      <!-- Days Carousel with Late Submission Notice -->
+      <div class="coquette-panel p-4 rounded-2xl space-y-3">
+        <p class="text-[11px] text-pink-500 text-center font-medium">
+          يمكنك اختيار أي يوم سابق وتسليم إنجازه حتى بعد منتصف الليل.
+        </p>
+        <div class="flex items-center gap-2 overflow-x-auto py-1" id="daysList">
+          <!-- Days populated via JS -->
+        </div>
+        <div class="text-center pt-1 border-t border-pink-100">
+          <span id="selectedDayTitle" class="text-xs font-bold text-pink-900">الاثنين، 2 نوفمبر 2026</span>
+          <span class="text-[10px] text-pink-400 block">صفحة جديدة، فرصة جديدة</span>
+        </div>
+      </div>
+
+      <!-- Progress Metric Card -->
+      <div class="coquette-panel p-5 rounded-2xl flex items-center justify-between border border-pink-200">
+        <div>
+          <h3 class="text-base font-bold text-pink-900">تقدّمك، خطوة بخطوة</h3>
+          <p class="text-xs text-pink-500">المنجز حتى الآن من أهداف اليوم كاملة</p>
+          <span id="completionRateText" class="text-[10px] text-pink-400 block mt-1">اكتمال التسجيل 0%</span>
+        </div>
+        <div class="relative w-16 h-16 flex items-center justify-center rounded-full bg-pink-50 border-2 border-pink-300">
+          <span id="progressPercentNum" class="text-base font-extrabold text-pink-600">0%</span>
+        </div>
+      </div>
+
+      <!-- Inner Sub-Tabs: (العادات اليومية | سجلي اليومي) -->
+      <div class="flex border-b border-pink-200 gap-6 text-sm font-bold">
+        <button onclick="switchSubTab('habits')" id="subtab-habits" class="pb-2 text-pink-500 border-b-2 border-pink-400">
+          <i class="fa-solid fa-list-check text-xs"></i> العادات اليومية
+        </button>
+        <button onclick="switchSubTab('log')" id="subtab-log" class="pb-2 text-pink-400 hover:text-pink-600">
+          <i class="fa-solid fa-pen-to-square text-xs"></i> سجلي اليومي
+        </button>
+      </div>
+
+      <!-- SUBTAB 1: HABITS -->
+      <div id="subtab-content-habits" class="space-y-6">
+        
+        <!-- Routine Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Morning Routine -->
+          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+                <i class="fa-regular fa-sun text-pink-400"></i> روتين الصباح
+              </h4>
+              <span class="text-[10px] text-pink-400">A FRESH START</span>
+            </div>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">أذكار الصباح</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">غسل الأسنان</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">تنظيف البشرة</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">السيروم والمرطب</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+            </div>
+          </div>
+
+          <!-- Evening Routine -->
+          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+                <i class="fa-regular fa-moon text-pink-400"></i> روتين المساء
+              </h4>
+              <span class="text-[10px] text-pink-400">A SOFT ENDING</span>
+            </div>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">أذكار المساء</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">غسل الأسنان</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
+                <span class="text-pink-900">تنظيف البشرة والعناية</span>
+                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Prayers & Water -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Prayers -->
+          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-hands-praying text-pink-400"></i> الصلوات الخمس
+              </h4>
+              <span class="text-[10px] text-pink-400">MOMENTS OF PEACE</span>
+            </div>
+            <div class="space-y-2 text-xs">
+              <script>
+                ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'].forEach(p => {
+                  document.write(`
+                    <div class="flex items-center justify-between bg-pink-50/40 p-1.5 rounded-xl border border-pink-100">
+                      <span class="text-pink-900 font-medium">${p}</span>
+                      <select onchange="updateCalculations()" class="prayer-sel bg-white text-[11px] text-pink-700 border border-pink-200 rounded-lg px-2 py-0.5 focus:outline-none">
+                        <option value="0">لم تتم</option>
+                        <option value="1">تمت في الوقت</option>
+                        <option value="0.5">تمت متأخرة</option>
+                      </select>
+                    </div>
+                  `);
+                });
+              </script>
+            </div>
+          </div>
+
+          <!-- Water -->
+          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-droplet text-pink-400"></i> شرب الماء
+              </h4>
+              <span class="text-[10px] text-pink-400">HYDRATION GOAL</span>
+            </div>
+            <p class="text-[11px] text-pink-500">كل قطرة = 500 مل من الهدف لترين</p>
+            <div class="grid grid-cols-4 gap-2 text-center pt-2">
+              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
+                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
+                <span class="text-[9px] text-pink-700">500 مل</span>
+              </button>
+              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
+                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
+                <span class="text-[9px] text-pink-700">1000 مل</span>
+              </button>
+              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
+                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
+                <span class="text-[9px] text-pink-700">1500 مل</span>
+              </button>
+              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
+                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
+                <span class="text-[9px] text-pink-700">2000 مل</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- SUBTAB 2: LOG (البروتين والتمارين والنوم) -->
+      <div id="subtab-content-log" class="space-y-6 hidden">
+        
+        <!-- Protein & Meals -->
+        <div class="coquette-card p-5 rounded-2xl space-y-4 shadow-sm">
+          <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+            <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-utensils text-pink-400"></i> البروتين والطعام
+            </h4>
+            <span class="text-[10px] text-pink-400">NOURISH YOUR DAY</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
+              <span class="font-bold text-pink-900">الإفطار</span>
+              <textarea placeholder="اكتبي الطعام والكمية..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
+            </div>
+            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
+              <span class="font-bold text-pink-900">الغداء</span>
+              <textarea placeholder="اكتبي الطعام والكمية..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
+            </div>
+            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
+              <span class="font-bold text-pink-900">العشاء</span>
+              <textarea placeholder="اكتبي الطعام والكمية..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
+            </div>
+            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
+              <span class="font-bold text-pink-900">الوجبات الخفيفة</span>
+              <textarea placeholder="اكتبي الوجبات الخفيفة..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between bg-pink-50 p-3 rounded-xl border border-pink-200 text-xs">
+            <span class="text-pink-900 font-bold">إجمالي البروتين المعتمَد:</span>
+            <div class="flex items-center gap-2">
+              <input type="number" placeholder="0" class="w-20 p-1.5 text-center bg-white border border-pink-300 rounded-lg text-xs font-bold focus:outline-none">
+              <span class="text-pink-700">جرام / الهدف 100 جرام</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise Log -->
+        <div class="coquette-card p-5 rounded-2xl space-y-4 shadow-sm">
+          <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+            <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-person-running text-pink-400"></i> سجل التمارين
+            </h4>
+            <span class="text-[10px] text-pink-400">MOVE A LITTLE</span>
+          </div>
+
+          <div class="bg-pink-50/30 p-4 rounded-xl border border-pink-100 space-y-3 text-xs">
+            <span class="font-bold text-pink-900 block">تمرين 1</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input type="text" placeholder="اسم التمرين" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
+              <input type="text" id="ytUrl" placeholder="رابط فيديو YouTube" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <input type="number" placeholder="الوقت الكلي (دقيقة)" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
+              <input type="number" placeholder="وقت الحركة الفعلي (دقيقة)" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
+            </div>
+            <div class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-pink-200">
+              <span class="text-pink-800 font-bold">مؤقت الحركة: <span id="timerDisplay" class="text-pink-600">00:00</span></span>
+              <div class="flex gap-2">
+                <button onclick="startTimer()" class="px-3 py-1 bg-pink-400 text-white rounded-md text-[11px] font-bold">ابدأ</button>
+                <button onclick="useTimer()" class="px-3 py-1 bg-pink-100 text-pink-700 border border-pink-300 rounded-md text-[11px] font-bold">استخدام الوقت</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sleep Tracker -->
+        <div class="coquette-card p-5 rounded-2xl space-y-4 shadow-sm">
+          <div class="flex items-center justify-between border-b border-pink-100 pb-2">
+            <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
+              <i class="fa-regular fa-moon text-pink-400"></i> متابعة النوم
+            </h4>
+            <span class="text-[10px] text-pink-400">REST IS PART OF THE JOURNEY</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block text-pink-800 mb-1">نوم الليل (ساعة):</label>
+              <input type="number" placeholder="0" class="w-full p-2 bg-pink-50/50 border border-pink-200 rounded-lg focus:outline-none text-center font-bold">
+            </div>
+            <div>
+              <label class="block text-pink-800 mb-1">قيلولة الظهر (ساعة):</label>
+              <input type="number" placeholder="0" class="w-full p-2 bg-pink-50/50 border border-pink-200 rounded-lg focus:outline-none text-center font-bold">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action & Bottom Controls -->
+      <div class="coquette-panel p-6 rounded-3xl space-y-4 text-center">
+        <div class="space-y-1">
+          <div class="text-sm font-bold text-pink-900">حفظ إنجازي حتى الآن</div>
+          <p id="progressSummarySubText" class="text-xs text-pink-500">تسجيل جزئي: 0% من هدف اليوم</p>
+        </div>
+        
+        <button onclick="openConfirmModal()" class="w-full py-3.5 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl shadow-md transition transform active:scale-98 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-check-double"></i> إنهاء اليوم واعتماده
+        </button>
+
+        <div class="grid grid-cols-3 gap-2 pt-3 border-t border-pink-100 text-xs">
+          <button onclick="copyData()" class="py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl transition">
+            نسخة من بياناتي
+          </button>
+          <button onclick="copyLink()" class="py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl transition">
+            نسخ رابط السجل
+          </button>
+          <button onclick="updateCalculations()" class="py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl transition">
+            تحديث السجل
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- TAB 2: MONTHLY HARVEST -->
+    <main id="view-monthly" class="space-y-6 hidden">
+      <div class="coquette-panel p-6 rounded-3xl text-center space-y-2">
+        <span class="text-[11px] tracking-widest uppercase text-pink-400 font-bold">A LITTLE BETTER, EVERY DAY 🐾</span>
+        <h2 class="text-2xl font-extrabold text-pink-900">انظري كم أُنجزتِ.</h2>
+        <p class="text-xs text-pink-600">ثلاثون يومًا من المحاولات الصغيرة، هنا تجتمع حكايتك.</p>
+      </div>
+
+      <div class="coquette-panel p-6 rounded-3xl space-y-4">
+        <div class="flex items-center justify-between border-b border-pink-100 pb-3">
+          <h4 class="font-bold text-pink-900 text-base flex items-center gap-2">
+            <i class="fa-solid fa-book-open text-pink-400"></i> حكاية الشهر، يومًا بيوم
+          </h4>
+          <span class="text-xs text-pink-500">اختاري أي يوم لمراجعته</span>
+        </div>
+        
+        <div class="grid grid-cols-6 sm:grid-cols-10 gap-2 py-2">
+          <script>
+            for(let i=1; i<=30; i++) {
+              const num = String(i).padStart(2, '0');
+              document.write(`
+                <button onclick="alert('مراجعة اليوم ${i}')" class="p-2 rounded-xl bg-pink-50 hover:bg-pink-100 border border-pink-200 text-center transition flex flex-col items-center gap-1 shadow-sm">
+                  <span class="text-xs font-bold text-pink-800">${num}</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-pink-300"></span>
+                </button>
+              `);
+            }
+          </script>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 3: INFO -->
+    <main id="view-info" class="space-y-6 hidden">
+      <div class="coquette-panel p-6 rounded-3xl text-center space-y-2">
+        <h2 class="text-2xl font-extrabold text-pink-900">تقدّم مفهوم، بلا غموض.</h2>
+        <p class="text-xs text-pink-600">النسبة دليل يساعدك على متابعة أهدافك، وليست تقييماً لقيمتك.</p>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Audio Modal -->
+  <div id="audioModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/40 backdrop-blur-sm hidden">
+    <div class="coquette-panel w-full max-w-md p-6 rounded-3xl space-y-4 shadow-xl animated-pop">
+      <div class="flex items-center justify-between border-b border-pink-200 pb-3">
+        <h3 class="font-bold text-pink-900 flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-music text-pink-500"></i> إعدادات الصوت والأجواء
+        </h3>
+        <button onclick="closeAudioModal()" class="text-pink-400 hover:text-pink-700 font-bold">✕</button>
+      </div>
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="playPresetAudio('rain')" class="p-2.5 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xs text-pink-800 font-medium transition">صوت المطر 🌧️</button>
+          <button onclick="playPresetAudio('waves')" class="p-2.5 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xs text-pink-800 font-medium transition">أمواج البحر 🌊</button>
+        </div>
+        <div class="pt-2 border-t border-pink-100 space-y-2">
+          <input type="text" id="youtubeUrlInput" placeholder="رابط يوتيوب..." class="w-full px-3 py-2 text-xs bg-pink-50 border border-pink-200 rounded-xl text-pink-900 focus:outline-none">
+          <button onclick="playCustomYouTube()" class="w-full py-2 bg-pink-400 text-white text-xs font-bold rounded-xl">تشغيل</button>
+        </div>
+        <button onclick="stopAudio()" class="w-full py-2 bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold rounded-xl">إيقاف الصوت</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="audioContainer" class="hidden"></div>
+
+  <script>
+    const CORRECT_PIN = "000";
+
+    function checkPin() {
+      const pin = document.getElementById('pinInput').value;
+      if (pin === CORRECT_PIN) {
+        document.getElementById('lockModal').classList.add('hidden');
+        document.getElementById('appContent').classList.remove('hidden');
+        initDays();
+        startClock();
+      } else {
+        document.getElementById('pinError').classList.remove('hidden');
+      }
+    }
+
+    function enterGuestMode() {
+      document.getElementById('lockModal').classList.add('hidden');
+      document.getElementById('appContent').classList.remove('hidden');
+      initDays();
+      startClock();
+    }
+
+    function logout() {
+      document.getElementById('lockModal').classList.remove('hidden');
+      document.getElementById('appContent').classList.add('hidden');
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-tab').forEach(t => {
+        t.classList.remove('active-tab');
+        t.classList.add('text-pink-600');
+      });
+      document.getElementById(`tab-${tabId}`).classList.add('active-tab');
+      document.getElementById(`tab-${tabId}`).classList.remove('text-pink-600');
+
+      document.getElementById('view-daily').classList.add('hidden');
+      document.getElementById('view-monthly').classList.add('hidden');
+      document.getElementById('view-info').classList.add('hidden');
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+    }
+
+    function switchSubTab(subId) {
+      document.getElementById('subtab-habits').className = subId === 'habits' ? 'pb-2 text-pink-500 border-b-2 border-pink-400' : 'pb-2 text-pink-400 hover:text-pink-600';
+      document.getElementById('subtab-log').className = subId === 'log' ? 'pb-2 text-pink-500 border-b-2 border-pink-400' : 'pb-2 text-pink-400 hover:text-pink-600';
+
+      document.getElementById('subtab-content-habits').classList.toggle('hidden', subId !== 'habits');
+      document.getElementById('subtab-content-log').classList.toggle('hidden', subId !== 'log');
+    }
+
+    function initDays() {
+      const daysContainer = document.getElementById('daysList');
+      daysContainer.innerHTML = '';
+      const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      
+      days.forEach((day, index) => {
+        const num = String(index + 1).padStart(2, '0');
+        const isActive = index === 1;
+        daysContainer.innerHTML += `
+          <div onclick="selectDay('${day}', '${num}')" class="px-4 py-2.5 rounded-2xl flex flex-col items-center gap-0.5 cursor-pointer transition ${isActive ? 'bg-pink-400 text-white font-bold shadow-md' : 'bg-pink-50/60 text-pink-700 border border-pink-200 hover:bg-pink-100'}">
+            <span class="text-[10px] opacity-80">${day}</span>
+            <span class="text-base font-extrabold">${num}</span>
+          </div>
+        `;
+      });
+    }
+
+    function selectDay(dayName, dayNum) {
+      document.getElementById('selectedDayTitle').innerText = `${dayName}، ${parseInt(dayNum)} نوفمبر 2026`;
+    }
+
+    function toggleWater(btn) {
+      btn.classList.toggle('bg-pink-400');
+      btn.classList.toggle('text-white');
+      btn.classList.toggle('border-pink-400');
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      const checkboxes = document.querySelectorAll('.custom-checkbox:checked').length;
+      const totalCheckboxes = document.querySelectorAll('.custom-checkbox').length;
+      const selects = document.querySelectorAll('.prayer-sel');
+      let prayerTotal = 0;
+      selects.forEach(s => prayerTotal += parseFloat(s.value));
+
+      const percentage = Math.round(((checkboxes + prayerTotal) / (totalCheckboxes + 5)) * 100);
+      document.getElementById('progressPercentNum').innerText = `${percentage}%`;
+      document.getElementById('completionRateText').innerText = `اكتمال التسجيل ${percentage}%`;
+      document.getElementById('progressSummarySubText').innerText = `تسجيل جزئي: ${percentage}% من هدف اليوم`;
+    }
+
+    function openConfirmModal() {
+      document.getElementById('confirmDayModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirmDayModal').classList.add('hidden');
+    }
+
+    function finishDayConfirm() {
+      closeConfirmModal();
+      alert("تم اعتماد اليوم وحفظ سجلك الشخصي بنجاح! 🐾");
+    }
+
+    function copyData() {
+      alert("تم نسخ بيانات سجلك الشخصي بنجاح! 🐾");
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert("تم نسخ رابط سجلك الشخصي 🐾");
+    }
+
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClock').innerText = now.toLocaleTimeString('ar-SA');
+      }, 1000);
+    }
+
+    function openAudioModal() { document.getElementById('audioModal').classList.remove('hidden'); }
+    function closeAudioModal() { document.getElementById('audioModal').classList.add('hidden'); }
+    function playPresetAudio(type) {
+      const container = document.getElementById('audioContainer');
+      const url = type === 'rain' ? 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg' : 'https://actions.google.com/sounds/v1/water/waves_ocean_surf.ogg';
+      container.innerHTML = `<audio autoplay loop><source src="${url}"></audio>`;
+      document.getElementById('audioButtonText').innerText = 'الصوت مفعل 🐾';
+      closeAudioModal();
+    }
+    function playCustomYouTube() {
+      const url = document.getElementById('youtubeUrlInput').value;
+      const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+      if (match && match[2].length === 11) {
+        document.getElementById('audioContainer').innerHTML = `<iframe width="0" height="0" src="https://www.youtube.com/embed/${match[2]}?autoplay=1" allow="autoplay"></iframe>`;
+        document.getElementById('audioButtonText').innerText = 'يوتيوب مفعل ♪';
+        closeAudioModal();
+      }
+    }
+    function stopAudio() {
+      document.getElementById('audioContainer').innerHTML = '';
+      document.getElementById('audioButtonText').innerText = 'الصوت مغلق';
+      closeAudioModal();
+    }
+
+    let timerInterval;
+    let seconds = 0;
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        seconds++;
+        const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const secs = String(seconds % 60).padStart(2, '0');
+        document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+      }, 1000);
+    }
+    function useTimer() {
+      clearInterval(timerInterval);
+      alert(`تم تسجيل مدة الحركة: ${Math.floor(seconds / 60)} دقيقة`);
+    }
+  </script>
+</body>
+</html>
