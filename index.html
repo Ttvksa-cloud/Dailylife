@@ -1,664 +1,963 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NATSUKI November Journal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background-color: #fff5f7;
-      background-image: radial-gradient(#fbcfe8 1.2px, transparent 1.2px);
-      background-size: 20px 20px;
-      color: #4a3b4c;
-    }
-    .coquette-panel {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      border: 1px solid #fbcfe8;
-      box-shadow: 0 8px 25px rgba(244, 114, 182, 0.08);
-    }
-    .coquette-card {
-      background: #ffffff;
-      border: 1px dashed #f472b6;
-    }
-    .active-tab {
-      background: #f472b6 !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 15px rgba(244, 114, 182, 0.35);
-    }
-    .custom-checkbox {
-      accent-color: #f472b6;
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .custom-checkbox:checked {
-      transform: scale(1.15);
-    }
-    .animated-pop {
-      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes popIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-  </style>
-</head>
-<body class="min-h-screen pb-24">
-
-  <!-- Pin Screen Modal -->
-  <div id="lockModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/40 backdrop-blur-md">
-    <div class="coquette-panel w-full max-w-sm p-8 rounded-3xl text-center space-y-6 animated-pop">
-      <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mx-auto border border-pink-300 text-pink-500 shadow-sm">
-        <i class="fa-solid fa-cat text-3xl"></i>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold text-pink-900 mb-1">NATSUKI PRIVATE JOURNAL 🐾</h2>
-        <p class="text-xs text-pink-600">سجلك الشخصي، محفوظ على أجهزتك.</p>
-      </div>
-      <div class="space-y-4">
-        <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="w-full text-center text-3xl tracking-[1em] py-3 bg-pink-50/70 border border-pink-300 rounded-2xl text-pink-900 focus:outline-none focus:border-pink-500 transition">
-        <button onclick="checkPin()" class="w-full py-3 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl shadow-md transition transform active:scale-95">فتح السجل</button>
-        <button onclick="enterGuestMode()" class="w-full py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 text-xs font-medium rounded-2xl transition">تجربة مؤقتة، بلا حفظ 🐾</button>
-      </div>
-      <p id="pinError" class="text-xs text-rose-500 hidden">الرمز السري غير صحيح (الرمز هو 000)</p>
-    </div>
-  </div>
-
-  <!-- Confirm End-Day Modal -->
-  <div id="confirmDayModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/50 backdrop-blur-sm hidden">
-    <div class="coquette-panel w-full max-w-md p-6 rounded-3xl text-center space-y-5 animated-pop border border-pink-300 shadow-2xl">
-      <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto text-pink-500 text-xl border border-pink-200">
-        <i class="fa-regular fa-circle-check"></i>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold text-pink-900 mb-2">هل انتهيتِ من تسجيل يومك؟</h3>
-        <p class="text-xs text-pink-600 leading-relaxed px-2">
-          ستُحتسب المربعات والصلوات التي لم تسجليها «لم تتم»، خانات الأرقام يجب تعبئتها أولاً، ولا تُحتسب «لا ينطبق» ضمن التقييم. يمكنك تعديل اليوم لاحقاً.
-        </p>
-      </div>
-      <div class="flex gap-3 pt-2">
-        <button onclick="closeConfirmModal()" class="w-1/2 py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold rounded-xl transition">العودة للمراجعة</button>
-        <button onclick="finishDayConfirm()" class="w-1/2 py-2.5 bg-pink-400 hover:bg-pink-500 text-white text-xs font-bold rounded-xl shadow-md transition">تأكيد الاعتماد</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Container -->
-  <div id="appContent" class="max-w-4xl mx-auto px-4 pt-6 space-y-6 hidden">
-    
-    <!-- Header -->
-    <header class="coquette-panel rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-500 border border-pink-300 shadow-sm">
-          <i class="fa-solid fa-cat text-xl"></i>
-        </div>
-        <div>
-          <h1 class="text-lg font-bold text-pink-900 leading-tight">November planner</h1>
-          <p class="text-xs text-pink-500">خطوة كل يوم • مساحتك الصغيرة للنمو 🐾</p>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <div class="flex items-center bg-pink-50 p-1.5 rounded-2xl border border-pink-200 text-sm font-medium">
-        <button onclick="switchTab('daily')" id="tab-daily" class="nav-tab active-tab px-4 py-2 rounded-xl transition flex items-center gap-2">
-          <i class="fa-solid fa-sun text-xs"></i> يومي
-        </button>
-        <button onclick="switchTab('monthly')" id="tab-monthly" class="nav-tab px-4 py-2 rounded-xl text-pink-600 hover:text-pink-900 transition flex items-center gap-2">
-          <i class="fa-chart-pie fa-solid text-xs"></i> حصاد الشهر
-        </button>
-        <button onclick="switchTab('info')" id="tab-info" class="nav-tab px-4 py-2 rounded-xl text-pink-600 hover:text-pink-900 transition flex items-center gap-2">
-          <i class="fa-circle-info fa-solid text-xs"></i> كيف تُحسب النسبة؟
-        </button>
-      </div>
-
-      <!-- Actions & Audio Toggle -->
-      <div class="flex items-center gap-2 text-xs">
-        <button onclick="openAudioModal()" class="px-3 py-1.5 rounded-xl bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-300 transition flex items-center gap-1.5 font-medium">
-          <i class="fa-solid fa-music"></i> <span id="audioButtonText">الصوت مغلق</span>
-        </button>
-        <button onclick="logout()" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition">
-          تسجيل الخروج
-        </button>
-      </div>
-    </header>
-
-    <!-- TAB 1: DAILY VIEW -->
-    <main id="view-daily" class="space-y-6">
-      
-      <!-- Inspirational Card -->
-      <div class="coquette-panel p-6 rounded-3xl text-center space-y-2 border border-pink-200">
-        <span class="text-[11px] tracking-widest uppercase text-pink-400 font-bold">A LITTLE BETTER, EVERY DAY 🐾</span>
-        <h2 class="text-2xl font-extrabold text-pink-900">بداية صغيرة، ونور كبير ينتظرك.</h2>
-        <p class="text-xs text-pink-600">هذه مساحتك لتعنتي بنفسك وبأهدافك.</p>
-      </div>
-
-      <!-- Weather & Time (Tabuk) -->
-      <div class="coquette-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-pink-500 text-lg border border-pink-200">
-            <i class="fa-solid fa-cloud-sun"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-pink-900">تبوك</span>
-              <span class="text-[10px] px-2 py-0.5 rounded-md bg-pink-100 text-pink-700 border border-pink-200">غائم</span>
-            </div>
-            <div id="liveClock" class="text-base font-extrabold text-pink-800 tracking-wide">08:00:00 ص</div>
-          </div>
-        </div>
-        <p class="text-xs text-pink-500 bg-pink-50 px-3 py-1.5 rounded-xl border border-pink-200">
-          وقت التسجيل يظهر بجانب البنود لا يحدد وقت أدائها تلقائياً
-        </p>
-      </div>
-
-      <!-- Days Carousel with Late Submission Notice -->
-      <div class="coquette-panel p-4 rounded-2xl space-y-3">
-        <p class="text-[11px] text-pink-500 text-center font-medium">
-          يمكنك اختيار أي يوم سابق وتسليم إنجازه حتى بعد منتصف الليل.
-        </p>
-        <div class="flex items-center gap-2 overflow-x-auto py-1" id="daysList">
-          <!-- Days populated via JS -->
-        </div>
-        <div class="text-center pt-1 border-t border-pink-100">
-          <span id="selectedDayTitle" class="text-xs font-bold text-pink-900">الاثنين، 2 نوفمبر 2026</span>
-          <span class="text-[10px] text-pink-400 block">صفحة جديدة، فرصة جديدة</span>
-        </div>
-      </div>
-
-      <!-- Progress Metric Card -->
-      <div class="coquette-panel p-5 rounded-2xl flex items-center justify-between border border-pink-200">
-        <div>
-          <h3 class="text-base font-bold text-pink-900">تقدّمك، خطوة بخطوة</h3>
-          <p class="text-xs text-pink-500">المنجز حتى الآن من أهداف اليوم كاملة</p>
-          <span id="completionRateText" class="text-[10px] text-pink-400 block mt-1">اكتمال التسجيل 0%</span>
-        </div>
-        <div class="relative w-16 h-16 flex items-center justify-center rounded-full bg-pink-50 border-2 border-pink-300">
-          <span id="progressPercentNum" class="text-base font-extrabold text-pink-600">0%</span>
-        </div>
-      </div>
-
-      <!-- Inner Sub-Tabs: (العادات اليومية | سجلي اليومي) -->
-      <div class="flex border-b border-pink-200 gap-6 text-sm font-bold">
-        <button onclick="switchSubTab('habits')" id="subtab-habits" class="pb-2 text-pink-500 border-b-2 border-pink-400">
-          <i class="fa-solid fa-list-check text-xs"></i> العادات اليومية
-        </button>
-        <button onclick="switchSubTab('log')" id="subtab-log" class="pb-2 text-pink-400 hover:text-pink-600">
-          <i class="fa-solid fa-pen-to-square text-xs"></i> سجلي اليومي
-        </button>
-      </div>
-
-      <!-- SUBTAB 1: HABITS -->
-      <div id="subtab-content-habits" class="space-y-6">
-        
-        <!-- Routine Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <!-- Morning Routine -->
-          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
-            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-                <i class="fa-regular fa-sun text-pink-400"></i> روتين الصباح
-              </h4>
-              <span class="text-[10px] text-pink-400">A FRESH START</span>
-            </div>
-            <div class="space-y-2 text-xs">
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">أذكار الصباح</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">غسل الأسنان</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">تنظيف البشرة</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">السيروم والمرطب</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-            </div>
-          </div>
-
-          <!-- Evening Routine -->
-          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
-            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-                <i class="fa-regular fa-moon text-pink-400"></i> روتين المساء
-              </h4>
-              <span class="text-[10px] text-pink-400">A SOFT ENDING</span>
-            </div>
-            <div class="space-y-2 text-xs">
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">أذكار المساء</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">غسل الأسنان</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-              <label class="flex items-center justify-between cursor-pointer hover:bg-pink-50/50 p-1 rounded-lg">
-                <span class="text-pink-900">تنظيف البشرة والعناية</span>
-                <input type="checkbox" onchange="updateCalculations()" class="custom-checkbox">
-              </label>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Prayers & Water -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <!-- Prayers -->
-          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
-            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-hands-praying text-pink-400"></i> الصلوات الخمس
-              </h4>
-              <span class="text-[10px] text-pink-400">MOMENTS OF PEACE</span>
-            </div>
-            <div class="space-y-2 text-xs">
-              <script>
-                ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'].forEach(p => {
-                  document.write(`
-                    <div class="flex items-center justify-between bg-pink-50/40 p-1.5 rounded-xl border border-pink-100">
-                      <span class="text-pink-900 font-medium">${p}</span>
-                      <select onchange="updateCalculations()" class="prayer-sel bg-white text-[11px] text-pink-700 border border-pink-200 rounded-lg px-2 py-0.5 focus:outline-none">
-                        <option value="0">لم تتم</option>
-                        <option value="1">تمت في الوقت</option>
-                        <option value="0.5">تمت متأخرة</option>
-                      </select>
-                    </div>
-                  `);
-                });
-              </script>
-            </div>
-          </div>
-
-          <!-- Water -->
-          <div class="coquette-card p-5 rounded-2xl space-y-3 shadow-sm">
-            <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-              <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-droplet text-pink-400"></i> شرب الماء
-              </h4>
-              <span class="text-[10px] text-pink-400">HYDRATION GOAL</span>
-            </div>
-            <p class="text-[11px] text-pink-500">كل قطرة = 500 مل من الهدف لترين</p>
-            <div class="grid grid-cols-4 gap-2 text-center pt-2">
-              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
-                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
-                <span class="text-[9px] text-pink-700">500 مل</span>
-              </button>
-              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
-                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
-                <span class="text-[9px] text-pink-700">1000 مل</span>
-              </button>
-              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
-                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
-                <span class="text-[9px] text-pink-700">1500 مل</span>
-              </button>
-              <button onclick="toggleWater(this)" class="water-b p-2.5 bg-pink-50/60 hover:bg-pink-100 border border-pink-200 rounded-xl flex flex-col items-center gap-1 transition">
-                <i class="fa-solid fa-glass-water text-lg text-pink-400"></i>
-                <span class="text-[9px] text-pink-700">2000 مل</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- SUBTAB 2: LOG (البروتين والتمارين والنوم) -->
-      <div id="subtab-content-log" class="space-y-6 hidden">
-        
-        <!-- Protein & Meals -->
-        <div class="coquette-card p-5 rounded-2xl space-y-4 shadow-sm">
-          <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-            <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-utensils text-pink-400"></i> البروتين والطعام
-            </h4>
-            <span class="text-[10px] text-pink-400">NOURISH YOUR DAY</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
-              <span class="font-bold text-pink-900">الإفطار</span>
-              <textarea placeholder="اكتبي الطعام والكمية..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
-            </div>
-            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
-              <span class="font-bold text-pink-900">الغداء</span>
-              <textarea placeholder="اكتبي الطعام والكمية..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
-            </div>
-            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
-              <span class="font-bold text-pink-900">العشاء</span>
-              <textarea placeholder="اكتبي الطعام والكمية..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
-            </div>
-            <div class="bg-pink-50/40 p-3 rounded-xl border border-pink-100 space-y-1">
-              <span class="font-bold text-pink-900">الوجبات الخفيفة</span>
-              <textarea placeholder="اكتبي الوجبات الخفيفة..." class="w-full h-16 p-2 bg-white border border-pink-200 rounded-lg text-xs focus:outline-none resize-none"></textarea>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between bg-pink-50 p-3 rounded-xl border border-pink-200 text-xs">
-            <span class="text-pink-900 font-bold">إجمالي البروتين المعتمَد:</span>
-            <div class="flex items-center gap-2">
-              <input type="number" placeholder="0" class="w-20 p-1.5 text-center bg-white border border-pink-300 rounded-lg text-xs font-bold focus:outline-none">
-              <span class="text-pink-700">جرام / الهدف 100 جرام</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exercise Log -->
-        <div class="coquette-card p-5 rounded-2xl space-y-4 shadow-sm">
-          <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-            <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-person-running text-pink-400"></i> سجل التمارين
-            </h4>
-            <span class="text-[10px] text-pink-400">MOVE A LITTLE</span>
-          </div>
-
-          <div class="bg-pink-50/30 p-4 rounded-xl border border-pink-100 space-y-3 text-xs">
-            <span class="font-bold text-pink-900 block">تمرين 1</span>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <input type="text" placeholder="اسم التمرين" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
-              <input type="text" id="ytUrl" placeholder="رابط فيديو YouTube" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <input type="number" placeholder="الوقت الكلي (دقيقة)" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
-              <input type="number" placeholder="وقت الحركة الفعلي (دقيقة)" class="p-2 bg-white border border-pink-200 rounded-lg focus:outline-none">
-            </div>
-            <div class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-pink-200">
-              <span class="text-pink-800 font-bold">مؤقت الحركة: <span id="timerDisplay" class="text-pink-600">00:00</span></span>
-              <div class="flex gap-2">
-                <button onclick="startTimer()" class="px-3 py-1 bg-pink-400 text-white rounded-md text-[11px] font-bold">ابدأ</button>
-                <button onclick="useTimer()" class="px-3 py-1 bg-pink-100 text-pink-700 border border-pink-300 rounded-md text-[11px] font-bold">استخدام الوقت</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sleep Tracker -->
-        <div class="coquette-card p-5 rounded-2xl space-y-4 shadow-sm">
-          <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-            <h4 class="font-bold text-pink-900 text-sm flex items-center gap-2">
-              <i class="fa-regular fa-moon text-pink-400"></i> متابعة النوم
-            </h4>
-            <span class="text-[10px] text-pink-400">REST IS PART OF THE JOURNEY</span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <label class="block text-pink-800 mb-1">نوم الليل (ساعة):</label>
-              <input type="number" placeholder="0" class="w-full p-2 bg-pink-50/50 border border-pink-200 rounded-lg focus:outline-none text-center font-bold">
-            </div>
-            <div>
-              <label class="block text-pink-800 mb-1">قيلولة الظهر (ساعة):</label>
-              <input type="number" placeholder="0" class="w-full p-2 bg-pink-50/50 border border-pink-200 rounded-lg focus:outline-none text-center font-bold">
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Action & Bottom Controls -->
-      <div class="coquette-panel p-6 rounded-3xl space-y-4 text-center">
-        <div class="space-y-1">
-          <div class="text-sm font-bold text-pink-900">حفظ إنجازي حتى الآن</div>
-          <p id="progressSummarySubText" class="text-xs text-pink-500">تسجيل جزئي: 0% من هدف اليوم</p>
-        </div>
-        
-        <button onclick="openConfirmModal()" class="w-full py-3.5 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl shadow-md transition transform active:scale-98 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-check-double"></i> إنهاء اليوم واعتماده
-        </button>
-
-        <div class="grid grid-cols-3 gap-2 pt-3 border-t border-pink-100 text-xs">
-          <button onclick="copyData()" class="py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl transition">
-            نسخة من بياناتي
-          </button>
-          <button onclick="copyLink()" class="py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl transition">
-            نسخ رابط السجل
-          </button>
-          <button onclick="updateCalculations()" class="py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 rounded-xl transition">
-            تحديث السجل
-          </button>
-        </div>
-      </div>
-
-    </main>
-
-    <!-- TAB 2: MONTHLY HARVEST -->
-    <main id="view-monthly" class="space-y-6 hidden">
-      <div class="coquette-panel p-6 rounded-3xl text-center space-y-2">
-        <span class="text-[11px] tracking-widest uppercase text-pink-400 font-bold">A LITTLE BETTER, EVERY DAY 🐾</span>
-        <h2 class="text-2xl font-extrabold text-pink-900">انظري كم أُنجزتِ.</h2>
-        <p class="text-xs text-pink-600">ثلاثون يومًا من المحاولات الصغيرة، هنا تجتمع حكايتك.</p>
-      </div>
-
-      <div class="coquette-panel p-6 rounded-3xl space-y-4">
-        <div class="flex items-center justify-between border-b border-pink-100 pb-3">
-          <h4 class="font-bold text-pink-900 text-base flex items-center gap-2">
-            <i class="fa-solid fa-book-open text-pink-400"></i> حكاية الشهر، يومًا بيوم
-          </h4>
-          <span class="text-xs text-pink-500">اختاري أي يوم لمراجعته</span>
-        </div>
-        
-        <div class="grid grid-cols-6 sm:grid-cols-10 gap-2 py-2">
-          <script>
-            for(let i=1; i<=30; i++) {
-              const num = String(i).padStart(2, '0');
-              document.write(`
-                <button onclick="alert('مراجعة اليوم ${i}')" class="p-2 rounded-xl bg-pink-50 hover:bg-pink-100 border border-pink-200 text-center transition flex flex-col items-center gap-1 shadow-sm">
-                  <span class="text-xs font-bold text-pink-800">${num}</span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-pink-300"></span>
+    <head>
+        <meta charSet="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="/_next/static/css/index.DGHbcWLa.css" data-rsc-css-href="/_next/static/css/index.DGHbcWLa.css" data-precedence="vite-rsc/importer-resources"/>
+        <link rel="modulepreload" fetchPriority="low" href="/_next/static/chunks/index-DB3QtZbS.js"/>
+        <script src="/_next/static/chunks/rolldown-runtime-C60lm6uB.js" type="module" async=""></script>
+        <script src="/_next/static/chunks/framework-D_rUT4EX.js" type="module" async=""></script>
+        <link rel="modulepreload" href="/_next/static/chunks/layout-segment-context-Bx9hQtjA.js" crossorigin=""/>
+        <link rel="modulepreload" href="/_next/static/chunks/planner-CQwvYfCZ.js" crossorigin=""/>
+        <title>NATSUKI November journal</title>
+        <meta name="description" content="مساحتك اليومية للعادات الصغيرة والإنجازات الجميلة. بلانر نوفمبر 2026."/>
+        <meta name="referrer" content="no-referrer"/>
+        <meta name="robots" content="noindex, nofollow"/>
+        <link rel="icon" href="/natsuki-logo-pastel.png"/>
+        <link rel="apple-touch-icon" href="/natsuki-logo-pastel.png"/>
+        <script>
+            Object.assign(((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }), {
+                params: {},
+                nav: {
+                    "pathname": "/",
+                    "searchParams": []
+                }
+            })
+        </script>
+        <link rel="modulepreload" href="/_next/static/chunks/index-DB3QtZbS.js"/>
+    </head>
+    <body>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <a class="brand" href="/">
+                    <img class="journal-logo brand-logo" src="/natsuki-logo-pastel.png" width="64" height="64" alt="Natsuki journal"/>
+                    <span>November planner</span>
+                </a>
+                <nav>
+                    <button class="selected">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2"></path>
+                            <path d="M12 20v2"></path>
+                            <path d="m4.93 4.93 1.41 1.41"></path>
+                            <path d="m17.66 17.66 1.41 1.41"></path>
+                            <path d="M2 12h2"></path>
+                            <path d="M20 12h2"></path>
+                            <path d="m6.34 17.66-1.41 1.41"></path>
+                            <path d="m19.07 4.93-1.41 1.41"></path>
+                        </svg>
+                        يومي
+                    </button>
+                    <button class="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column" aria-hidden="true">
+                            <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+                            <path d="M18 17V9"></path>
+                            <path d="M13 17V5"></path>
+                            <path d="M8 17v-3"></path>
+                        </svg>
+                        حصاد الشهر
+                    </button>
+                    <button class="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                        كيف تُحسب النسبة؟
+                    </button>
+                </nav>
+                <div class="cover-card">
+                    <img src="/cover.png" alt="غلاف November Planner من تصميم البلانر"/>
+                    <p>You are going to GLOW.</p>
+                </div>
+                <div class="sidebar-bottom">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud" aria-hidden="true">
+                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                    </svg>
+                    <span>سجل واحد · محفوظ عبر أجهزتك</span>
+                </div>
+                <button class="backup">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download" aria-hidden="true">
+                        <path d="M12 15V3"></path>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <path d="m7 10 5 5 5-5"></path>
+                    </svg>
+                    تنزيل نسخة من بياناتي
                 </button>
-              `);
-            }
-          </script>
+                <button class="backup">نسخ رابط الموقع</button>
+            </aside>
+            <main>
+                <header class="topbar">
+                    <button class="secondary">تسجيل الخروج</button>
+                    <button class="sound-toggle" aria-pressed="true">♫ الصوت مفعّل</button>
+                    <span class="month-pill">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days" aria-hidden="true">
+                            <path d="M8 2v3"></path>
+                            <path d="M16 2v3"></path>
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <path d="M3 9h18"></path>
+                            <path d="M8 13h.01"></path>
+                            <path d="M12 13h.01"></path>
+                            <path d="M16 13h.01"></path>
+                            <path d="M8 17h.01"></path>
+                            <path d="M12 17h.01"></path>
+                            <path d="M16 17h.01"></path>
+                        </svg>
+                        نوفمبر 2026
+                    </span>
+                </header>
+                <div class="content">
+                    <div class="hero">
+                        <div>
+                            <span class="eyebrow">A LITTLE BETTER, EVERY DAY</span>
+                            <h1>بداية صغيرة، ونور كبير ينتظرك.</h1>
+                            <p>هذه مساحتك لتعتني بنفسك وبأهدافك.</p>
+                        </div>
+                        <div class="journal-emblem">
+                            <img class="journal-logo" src="/natsuki-logo-pastel.png" width="170" height="170" alt="Natsuki journal — Made by tabanatsuki"/>
+                            <span>Natsuki &#x27;s November</span>
+                        </div>
+                    </div>
+                    <div class="notice">جارٍ تحميل سجلاتك…</div>
+                    <div class="clock-ribbon">
+                        <div>
+                            <span class="ribbon-bow">୨୧</span>
+                            <strong>—</strong>
+                            <span>توقيت جدة</span>
+                        </div>
+                        <p>
+                            <small>وقت التسجيل يظهر بجانب البنود؛ لا يحدد وقت أدائها تلقائيًا.</small>
+                        </p>
+                        <button class="text-button">رابط الموقع</button>
+                    </div>
+                    <div class="calendar-strip">
+                        <button class="current " aria-label="الأحد 1 نوفمبر">
+                            <small>الأحد</small>
+                            <b>01</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الاثنين 2 نوفمبر">
+                            <small>الاثنين</small>
+                            <b>02</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الثلاثاء 3 نوفمبر">
+                            <small>الثلاثاء</small>
+                            <b>03</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأربعاء 4 نوفمبر">
+                            <small>الأربعاء</small>
+                            <b>04</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الخميس 5 نوفمبر">
+                            <small>الخميس</small>
+                            <b>05</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الجمعة 6 نوفمبر">
+                            <small>الجمعة</small>
+                            <b>06</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="السبت 7 نوفمبر">
+                            <small>السبت</small>
+                            <b>07</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأحد 8 نوفمبر">
+                            <small>الأحد</small>
+                            <b>08</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الاثنين 9 نوفمبر">
+                            <small>الاثنين</small>
+                            <b>09</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الثلاثاء 10 نوفمبر">
+                            <small>الثلاثاء</small>
+                            <b>10</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأربعاء 11 نوفمبر">
+                            <small>الأربعاء</small>
+                            <b>11</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الخميس 12 نوفمبر">
+                            <small>الخميس</small>
+                            <b>12</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الجمعة 13 نوفمبر">
+                            <small>الجمعة</small>
+                            <b>13</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="السبت 14 نوفمبر">
+                            <small>السبت</small>
+                            <b>14</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأحد 15 نوفمبر">
+                            <small>الأحد</small>
+                            <b>15</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الاثنين 16 نوفمبر">
+                            <small>الاثنين</small>
+                            <b>16</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الثلاثاء 17 نوفمبر">
+                            <small>الثلاثاء</small>
+                            <b>17</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأربعاء 18 نوفمبر">
+                            <small>الأربعاء</small>
+                            <b>18</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الخميس 19 نوفمبر">
+                            <small>الخميس</small>
+                            <b>19</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الجمعة 20 نوفمبر">
+                            <small>الجمعة</small>
+                            <b>20</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="السبت 21 نوفمبر">
+                            <small>السبت</small>
+                            <b>21</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأحد 22 نوفمبر">
+                            <small>الأحد</small>
+                            <b>22</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الاثنين 23 نوفمبر">
+                            <small>الاثنين</small>
+                            <b>23</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الثلاثاء 24 نوفمبر">
+                            <small>الثلاثاء</small>
+                            <b>24</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأربعاء 25 نوفمبر">
+                            <small>الأربعاء</small>
+                            <b>25</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الخميس 26 نوفمبر">
+                            <small>الخميس</small>
+                            <b>26</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الجمعة 27 نوفمبر">
+                            <small>الجمعة</small>
+                            <b>27</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="السبت 28 نوفمبر">
+                            <small>السبت</small>
+                            <b>28</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الأحد 29 نوفمبر">
+                            <small>الأحد</small>
+                            <b>29</b>
+                            <i></i>
+                        </button>
+                        <button class="future " aria-label="الاثنين 30 نوفمبر">
+                            <small>الاثنين</small>
+                            <b>30</b>
+                            <i></i>
+                        </button>
+                    </div>
+                    <div class="day-title">
+                        <div>
+                            <p>يمكنك اختيار أي يوم سابق وتسليم إنجازه حتى بعد منتصف الليل.</p>
+                            <h2>
+                                الأحد
+                                <!-- -->
+                                ، 
+                                <!-- -->
+                                1
+                                <!-- -->
+                                نوفمبر <span>2026</span>
+                            </h2>
+                            <p>صفحة جديدة، فرصة جديدة</p>
+                        </div>
+                        <div class="arrows">
+                            <button aria-label="اليوم السابق" disabled="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right" aria-hidden="true">
+                                    <path d="m9 18 6-6-6-6"></path>
+                                </svg>
+                            </button>
+                            <button aria-label="اليوم التالي">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left" aria-hidden="true">
+                                    <path d="m15 18-6-6 6-6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overview">
+                        <div class="score-panel">
+                            <div class="ring" style="--progress:0%">
+                                <div>
+                                    <strong>0%</strong>
+                                    <small>إنجاز مؤقت</small>
+                                </div>
+                            </div>
+                            <div>
+                                <h3>تقدّمك، خطوة بخطوة</h3>
+                                <p>المنجز حتى الآن من أهداف اليوم كاملة.</p>
+                                <span class="coverage">اكتمال التسجيل <!-- -->0<!-- -->%</span>
+                            </div>
+                        </div>
+                        <div class="mini lavender">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open" aria-hidden="true">
+                                <path d="M12 5v16"></path>
+                                <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path>
+                            </svg>
+                            <small>جلسات القدرات</small>
+                            <strong>
+                                0<em> / 5</em>
+                            </strong>
+                            <span>الهدف 150 دقيقة</span>
+                        </div>
+                        <div class="mini blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets" aria-hidden="true">
+                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path>
+                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path>
+                            </svg>
+                            <small>الماء</small>
+                            <strong>
+                                —<em> لتر</em>
+                            </strong>
+                            <span>الهدف لتران</span>
+                        </div>
+                    </div>
+                    <div class="subtabs">
+                        <button class="active">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                            عاداتي اليومية
+                        </button>
+                        <button class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open" aria-hidden="true">
+                                <path d="M12 5v16"></path>
+                                <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path>
+                            </svg>
+                            سجلّي اليومي
+                        </button>
+                    </div>
+                    <fieldset class="form-area" disabled="">
+                        <div class="cards-grid">
+                            <section class="card peach">
+                                <div class="card-heading">
+                                    <span class="icon-box">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="4"></circle>
+                                            <path d="M12 2v2"></path>
+                                            <path d="M12 20v2"></path>
+                                            <path d="m4.93 4.93 1.41 1.41"></path>
+                                            <path d="m17.66 17.66 1.41 1.41"></path>
+                                            <path d="M2 12h2"></path>
+                                            <path d="M20 12h2"></path>
+                                            <path d="m6.34 17.66-1.41 1.41"></path>
+                                            <path d="m19.07 4.93-1.41 1.41"></path>
+                                        </svg>
+                                    </span>
+                                    <div>
+                                        <h3>روتين الصباح</h3>
+                                        <span class="en">A FRESH START</span>
+                                    </div>
+                                </div>
+                                <div class="tasks">
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>أذكار الصباح</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>غسل الأسنان</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>تنظيف البشرة</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>السيروم والترطيب</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>واقي الشمس SPF</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="card mint">
+                                <div class="card-heading">
+                                    <span class="icon-box">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flower2 lucide-flower-2" aria-hidden="true">
+                                            <path d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m5 0a3 3 0 1 1-3 3m3-3h-1m-2 3v-1"></path>
+                                            <circle cx="12" cy="8" r="2"></circle>
+                                            <path d="M12 10v12"></path>
+                                            <path d="M12 22c4.2 0 7-1.667 7-5-4.2 0-7 1.667-7 5Z"></path>
+                                            <path d="M12 22c-4.2 0-7-1.667-7-5 4.2 0 7 1.667 7 5Z"></path>
+                                        </svg>
+                                    </span>
+                                    <div>
+                                        <h3>العادات اليومية</h3>
+                                        <span class="en">THE LITTLE THINGS</span>
+                                    </div>
+                                </div>
+                                <div class="tasks">
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>برد الأظافر</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>تناول الحبوب الصباحية</span>
+                                        </button>
+                                        <button class="na ">لا ينطبق</button>
+                                    </div>
+                                </div>
+                                <div class="derived">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity" aria-hidden="true">
+                                        <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path>
+                                    </svg>
+                                    الرياضة: 
+                                    <!-- -->
+                                    لم تُسجّل بعد<button>سجّلي التمارين ←</button>
+                                </div>
+                            </section>
+                            <section class="card lavender">
+                                <div class="card-heading">
+                                    <span class="icon-box">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon" aria-hidden="true">
+                                            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+                                        </svg>
+                                    </span>
+                                    <div>
+                                        <h3>روتين المساء</h3>
+                                        <span class="en">A SOFT ENDING</span>
+                                    </div>
+                                </div>
+                                <div class="tasks">
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>أذكار المساء</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>تناول الحبوب المسائية</span>
+                                        </button>
+                                        <button class="na ">لا ينطبق</button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>غسل الأسنان</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>تنظيف البشرة</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>العناية المسائية بالبشرة</span>
+                                        </button>
+                                    </div>
+                                    <div class="task-row">
+                                        <button class="task-toggle " aria-pressed="false">
+                                            <span class="checkbox"></span>
+                                            <span>العناية بالجسم</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="card blue">
+                                <div class="card-heading">
+                                    <span class="icon-box">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone" aria-hidden="true">
+                                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                                            <path d="M12 18h.01"></path>
+                                        </svg>
+                                    </span>
+                                    <div>
+                                        <h3>استخدام الهاتف</h3>
+                                        <span class="en">MORE PRESENCE, LESS SCROLLING</span>
+                                    </div>
+                                </div>
+                                <p class="goal">الهدف اليومي: ساعتان أو أقل</p>
+                                <label class="number-field">
+                                    <span>كم ساعة استخدمتِ الهاتف؟</span>
+                                    <div>
+                                        <input aria-label="كم ساعة استخدمتِ الهاتف؟" type="number" min="0" max="24" step="any" placeholder="—" value=""/>
+                                        <small>ساعة</small>
+                                    </div>
+                                </label>
+                                <small class="hint">اكتبي المدة الفعلية من تقرير وقت الشاشة. نسبة الهاتف مؤقتة حتى نهاية اليوم.</small>
+                            </section>
+                            <div class="wide">
+                                <section class="card lavender">
+                                    <div class="card-heading">
+                                        <span class="icon-box">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open" aria-hidden="true">
+                                                <path d="M12 5v16"></path>
+                                                <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <h3>مذاكرة القدرات</h3>
+                                            <span class="en">MAKE ROOM FOR YOUR FUTURE</span>
+                                        </div>
+                                    </div>
+                                    <div class="study-intro">
+                                        <span>5 جلسات × 30 دقيقة مذاكرة فعلية</span>
+                                        <span>استراحة 10 دقائق بين الجلسات</span>
+                                    </div>
+                                    <div class="sessions">
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الجلسة <!-- -->1</strong>
+                                                <small>30 دقيقة</small>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">مراجعة</button>
+                                                <button class="" aria-pressed="false">حل</button>
+                                                <button class="" aria-pressed="false">مشاهدة</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الجلسة <!-- -->2</strong>
+                                                <small>30 دقيقة</small>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">مراجعة</button>
+                                                <button class="" aria-pressed="false">حل</button>
+                                                <button class="" aria-pressed="false">مشاهدة</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الجلسة <!-- -->3</strong>
+                                                <small>30 دقيقة</small>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">مراجعة</button>
+                                                <button class="" aria-pressed="false">حل</button>
+                                                <button class="" aria-pressed="false">مشاهدة</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الجلسة <!-- -->4</strong>
+                                                <small>30 دقيقة</small>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">مراجعة</button>
+                                                <button class="" aria-pressed="false">حل</button>
+                                                <button class="" aria-pressed="false">مشاهدة</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الجلسة <!-- -->5</strong>
+                                                <small>30 دقيقة</small>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">مراجعة</button>
+                                                <button class="" aria-pressed="false">حل</button>
+                                                <button class="" aria-pressed="false">مشاهدة</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="wide">
+                                <section class="card pink">
+                                    <div class="card-heading">
+                                        <span class="icon-box">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart" aria-hidden="true">
+                                                <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <h3>الصلوات الخمس</h3>
+                                            <span class="en">MOMENTS OF PEACE</span>
+                                        </div>
+                                    </div>
+                                    <p class="goal">حددي الصلاة عند أدائها. «متأخر» يحتسب نصف نقاطها في مؤشر المتابعة.</p>
+                                    <div class="sessions">
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الفجر</strong>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">متأخر</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>الظهر</strong>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">متأخر</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>العصر</strong>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">متأخر</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>المغرب</strong>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">متأخر</button>
+                                            </div>
+                                        </div>
+                                        <div class="session ">
+                                            <button class="session-check" aria-pressed="false">
+                                                <span class="checkbox"></span>
+                                                <strong>العشاء</strong>
+                                            </button>
+                                            <div class="study-types">
+                                                <button class="" aria-pressed="false">متأخر</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="stack">
+                                <section class="card blue">
+                                    <div class="card-heading">
+                                        <span class="icon-box">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets" aria-hidden="true">
+                                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path>
+                                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path>
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <h3>شرب الماء</h3>
+                                            <span class="en">A SIP OF SELF-CARE</span>
+                                        </div>
+                                    </div>
+                                    <p class="goal">كل قطرة = 500 مل · الهدف لتران</p>
+                                    <div class="water-buttons">
+                                        <button class="" aria-label="إجمالي الماء 500 مل" aria-pressed="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets" aria-hidden="true">
+                                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path>
+                                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path>
+                                            </svg>
+                                            <span>500<!-- --> مل</span>
+                                        </button>
+                                        <button class="" aria-label="إجمالي الماء 1000 مل" aria-pressed="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets" aria-hidden="true">
+                                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path>
+                                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path>
+                                            </svg>
+                                            <span>1000<!-- --> مل</span>
+                                        </button>
+                                        <button class="" aria-label="إجمالي الماء 1500 مل" aria-pressed="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets" aria-hidden="true">
+                                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path>
+                                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path>
+                                            </svg>
+                                            <span>1500<!-- --> مل</span>
+                                        </button>
+                                        <button class="" aria-label="إجمالي الماء 2000 مل" aria-pressed="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets" aria-hidden="true">
+                                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path>
+                                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path>
+                                            </svg>
+                                            <span>2000<!-- --> مل</span>
+                                        </button>
+                                    </div>
+                                    <button class="text-button">تسجيل صفر مل</button>
+                                </section>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="savebar">
+                        <div class="saved-time"></div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud" aria-hidden="true">
+                                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                            </svg>
+                            <span>احفظي مسودتك لتكملي لاحقًا</span>
+                        </div>
+                        <button class="secondary" disabled="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-save" aria-hidden="true">
+                                <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                                <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
+                                <path d="M7 3v4a1 1 0 0 0 1 1h7"></path>
+                            </svg>
+                            <span>
+                                حفظ إنجازي حتى الآن<small>تسجيل جزئي · <!-- -->0<!-- -->% من هدف اليوم</small>
+                            </span>
+                        </button>
+                        <button class="primary" disabled="">
+                            <span>
+                                إنهاء اليوم واعتماده<small>نهاية اليوم · <!-- -->0<!-- -->% من هدف اليوم</small>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mobile-tools">
+                        <button class="secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download" aria-hidden="true">
+                                <path d="M12 15V3"></path>
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <path d="m7 10 5 5 5-5"></path>
+                            </svg>
+                            نسخة من بياناتي
+                        </button>
+                        <button class="secondary">نسخ رابط الموقع</button>
+                        <button class="secondary">تحديث السجل</button>
+                    </div>
+                    <div class="visitor-counter" role="status" title="عدد المتصفحات التي دخلت بكود 000؛ ليس عدد المتصلين الآن. مسح بيانات المتصفح أو تغيير الجهاز قد يعدّ الزيارة مرة أخرى.">
+                        <span>♡ زوّار المشاهدة</span>
+                        <strong>—</strong>
+                        <small>متصفح دخل بكود 000</small>
+                    </div>
+                    <footer>
+                        صُنع لمساحتك الهادئة 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart" aria-hidden="true">
+                            <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path>
+                        </svg>
+                        NATSUKI November journal
+                    </footer>
+                </div>
+            </main>
         </div>
-      </div>
-    </main>
-
-    <!-- TAB 3: INFO -->
-    <main id="view-info" class="space-y-6 hidden">
-      <div class="coquette-panel p-6 rounded-3xl text-center space-y-2">
-        <h2 class="text-2xl font-extrabold text-pink-900">تقدّم مفهوم، بلا غموض.</h2>
-        <p class="text-xs text-pink-600">النسبة دليل يساعدك على متابعة أهدافك، وليست تقييماً لقيمتك.</p>
-      </div>
-    </main>
-
-  </div>
-
-  <!-- Audio Modal -->
-  <div id="audioModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/40 backdrop-blur-sm hidden">
-    <div class="coquette-panel w-full max-w-md p-6 rounded-3xl space-y-4 shadow-xl animated-pop">
-      <div class="flex items-center justify-between border-b border-pink-200 pb-3">
-        <h3 class="font-bold text-pink-900 flex items-center gap-2 text-sm">
-          <i class="fa-solid fa-music text-pink-500"></i> إعدادات الصوت والأجواء
-        </h3>
-        <button onclick="closeAudioModal()" class="text-pink-400 hover:text-pink-700 font-bold">✕</button>
-      </div>
-      <div class="space-y-3">
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="playPresetAudio('rain')" class="p-2.5 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xs text-pink-800 font-medium transition">صوت المطر 🌧️</button>
-          <button onclick="playPresetAudio('waves')" class="p-2.5 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xs text-pink-800 font-medium transition">أمواج البحر 🌊</button>
-        </div>
-        <div class="pt-2 border-t border-pink-100 space-y-2">
-          <input type="text" id="youtubeUrlInput" placeholder="رابط يوتيوب..." class="w-full px-3 py-2 text-xs bg-pink-50 border border-pink-200 rounded-xl text-pink-900 focus:outline-none">
-          <button onclick="playCustomYouTube()" class="w-full py-2 bg-pink-400 text-white text-xs font-bold rounded-xl">تشغيل</button>
-        </div>
-        <button onclick="stopAudio()" class="w-full py-2 bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold rounded-xl">إيقاف الصوت</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="audioContainer" class="hidden"></div>
-
-  <script>
-    const CORRECT_PIN = "000";
-
-    function checkPin() {
-      const pin = document.getElementById('pinInput').value;
-      if (pin === CORRECT_PIN) {
-        document.getElementById('lockModal').classList.add('hidden');
-        document.getElementById('appContent').classList.remove('hidden');
-        initDays();
-        startClock();
-      } else {
-        document.getElementById('pinError').classList.remove('hidden');
-      }
-    }
-
-    function enterGuestMode() {
-      document.getElementById('lockModal').classList.add('hidden');
-      document.getElementById('appContent').classList.remove('hidden');
-      initDays();
-      startClock();
-    }
-
-    function logout() {
-      document.getElementById('lockModal').classList.remove('hidden');
-      document.getElementById('appContent').classList.add('hidden');
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.nav-tab').forEach(t => {
-        t.classList.remove('active-tab');
-        t.classList.add('text-pink-600');
-      });
-      document.getElementById(`tab-${tabId}`).classList.add('active-tab');
-      document.getElementById(`tab-${tabId}`).classList.remove('text-pink-600');
-
-      document.getElementById('view-daily').classList.add('hidden');
-      document.getElementById('view-monthly').classList.add('hidden');
-      document.getElementById('view-info').classList.add('hidden');
-
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
-    }
-
-    function switchSubTab(subId) {
-      document.getElementById('subtab-habits').className = subId === 'habits' ? 'pb-2 text-pink-500 border-b-2 border-pink-400' : 'pb-2 text-pink-400 hover:text-pink-600';
-      document.getElementById('subtab-log').className = subId === 'log' ? 'pb-2 text-pink-500 border-b-2 border-pink-400' : 'pb-2 text-pink-400 hover:text-pink-600';
-
-      document.getElementById('subtab-content-habits').classList.toggle('hidden', subId !== 'habits');
-      document.getElementById('subtab-content-log').classList.toggle('hidden', subId !== 'log');
-    }
-
-    function initDays() {
-      const daysContainer = document.getElementById('daysList');
-      daysContainer.innerHTML = '';
-      const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      
-      days.forEach((day, index) => {
-        const num = String(index + 1).padStart(2, '0');
-        const isActive = index === 1;
-        daysContainer.innerHTML += `
-          <div onclick="selectDay('${day}', '${num}')" class="px-4 py-2.5 rounded-2xl flex flex-col items-center gap-0.5 cursor-pointer transition ${isActive ? 'bg-pink-400 text-white font-bold shadow-md' : 'bg-pink-50/60 text-pink-700 border border-pink-200 hover:bg-pink-100'}">
-            <span class="text-[10px] opacity-80">${day}</span>
-            <span class="text-base font-extrabold">${num}</span>
-          </div>
-        `;
-      });
-    }
-
-    function selectDay(dayName, dayNum) {
-      document.getElementById('selectedDayTitle').innerText = `${dayName}، ${parseInt(dayNum)} نوفمبر 2026`;
-    }
-
-    function toggleWater(btn) {
-      btn.classList.toggle('bg-pink-400');
-      btn.classList.toggle('text-white');
-      btn.classList.toggle('border-pink-400');
-      updateCalculations();
-    }
-
-    function updateCalculations() {
-      const checkboxes = document.querySelectorAll('.custom-checkbox:checked').length;
-      const totalCheckboxes = document.querySelectorAll('.custom-checkbox').length;
-      const selects = document.querySelectorAll('.prayer-sel');
-      let prayerTotal = 0;
-      selects.forEach(s => prayerTotal += parseFloat(s.value));
-
-      const percentage = Math.round(((checkboxes + prayerTotal) / (totalCheckboxes + 5)) * 100);
-      document.getElementById('progressPercentNum').innerText = `${percentage}%`;
-      document.getElementById('completionRateText').innerText = `اكتمال التسجيل ${percentage}%`;
-      document.getElementById('progressSummarySubText').innerText = `تسجيل جزئي: ${percentage}% من هدف اليوم`;
-    }
-
-    function openConfirmModal() {
-      document.getElementById('confirmDayModal').classList.remove('hidden');
-    }
-
-    function closeConfirmModal() {
-      document.getElementById('confirmDayModal').classList.add('hidden');
-    }
-
-    function finishDayConfirm() {
-      closeConfirmModal();
-      alert("تم اعتماد اليوم وحفظ سجلك الشخصي بنجاح! 🐾");
-    }
-
-    function copyData() {
-      alert("تم نسخ بيانات سجلك الشخصي بنجاح! 🐾");
-    }
-
-    function copyLink() {
-      navigator.clipboard.writeText(window.location.href);
-      alert("تم نسخ رابط سجلك الشخصي 🐾");
-    }
-
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('liveClock').innerText = now.toLocaleTimeString('ar-SA');
-      }, 1000);
-    }
-
-    function openAudioModal() { document.getElementById('audioModal').classList.remove('hidden'); }
-    function closeAudioModal() { document.getElementById('audioModal').classList.add('hidden'); }
-    function playPresetAudio(type) {
-      const container = document.getElementById('audioContainer');
-      const url = type === 'rain' ? 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg' : 'https://actions.google.com/sounds/v1/water/waves_ocean_surf.ogg';
-      container.innerHTML = `<audio autoplay loop><source src="${url}"></audio>`;
-      document.getElementById('audioButtonText').innerText = 'الصوت مفعل 🐾';
-      closeAudioModal();
-    }
-    function playCustomYouTube() {
-      const url = document.getElementById('youtubeUrlInput').value;
-      const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-      if (match && match[2].length === 11) {
-        document.getElementById('audioContainer').innerHTML = `<iframe width="0" height="0" src="https://www.youtube.com/embed/${match[2]}?autoplay=1" allow="autoplay"></iframe>`;
-        document.getElementById('audioButtonText').innerText = 'يوتيوب مفعل ♪';
-        closeAudioModal();
-      }
-    }
-    function stopAudio() {
-      document.getElementById('audioContainer').innerHTML = '';
-      document.getElementById('audioButtonText').innerText = 'الصوت مغلق';
-      closeAudioModal();
-    }
-
-    let timerInterval;
-    let seconds = 0;
-    function startTimer() {
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        seconds++;
-        const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-        const secs = String(seconds % 60).padStart(2, '0');
-        document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
-      }, 1000);
-    }
-    function useTimer() {
-      clearInterval(timerInterval);
-      alert(`تم تسجيل مدة الحركة: ${Math.floor(seconds / 60)} دقيقة`);
-    }
-  </script>
-</body>
+        <script type="module" src="/_next/static/chunks/index-DB3QtZbS.js" id="_R_" async=""></script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("0:{\"page:/\":\"$L1\",\"layout:/\":\"$L2\",\"route:/\":\"$L3\",\"__route\":\"route:/\",\"__interceptionContext\":null,\"__layoutIds\":[\"layout:/\"],\"__rootLayout\":\"/\",\"__bfcacheSegmentIdentities\":{\"layout:/\":\"[\\\"layout\\\",\\\"layout:/\\\",\\\"root-boundary:/\\\",\\\"\\\"]\",\"page:/\":\"[\\\"page\\\",\\\"page:/\\\",\\\"root-boundary:/\\\",\\\"\\\"]\"},\"__srcPage\":[\"page\"],\"__layoutFlags\":{\"layout:/\":\"s\"},\"__artifactCompatibility\":{\"schemaVersion\":1,\"graphVersion\":\"app-route-graph:1177fd80f83fa7b0\",\"deploymentVersion\":\"0cdd508e-f304-4d44-b2dd-ff698f885884\",\"appElementsSchemaVersion\":1,\"rscPayloadSchemaVersion\":1,\"rootBoundaryId\":\"/\",\"renderEpoch\":null},\"__dynamicStaleTime\":0}\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("4:I[\"74f944bd09a9\",[],\"Children\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("5:I[\"52529b92208a\",[],\"GlobalErrorBoundary\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("6:I[\"18ecf746a395\",[],\"default\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("7:I[\"52529b92208a\",[],\"ErrorBoundary\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("8:I[\"1b73e8b5fbe4\",[],\"LayoutSegmentProvider\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("9:I[\"74f944bd09a9\",[],\"Slot\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("a:I[\"52529b92208a\",[],\"NotFoundBoundary\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("b:I[\"78579b1089e4\",[],\"AppRouterScrollTarget\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("c:I[\"52529b92208a\",[],\"RedirectBoundary\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push(":HL[\"/_next/static/css/index.DGHbcWLa.css\",\"style\"     ]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("2:[[[\"$\",\"link\",\"css:/_next/static/css/index.DGHbcWLa.css\",{\"rel\":\"stylesheet\",\"precedence\":\"vite-rsc/importer-resources\",\"href\":\"/_next/static/css/index.DGHbcWLa.css\",\"data-rsc-css-href\":\"/_next/static/css/index.DGHbcWLa.css\"}],\"$undefined\"],[\"$\",\"html\",null,{\"lang\":\"ar\",\"dir\":\"rtl\",\"children\":[\"$\",\"body\",null,{\"children\":[\"$\",\"$L4\",null,{}]}]}]]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("3:[[[\"$\",\"meta\",null,{\"charSet\":\"utf-8\"}],[[\"$\",\"title\",\"0\",{\"children\":\"NATSUKI November journal\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"مساحتك اليومية للعادات الصغيرة والإنجازات الجميلة. بلانر نوفمبر 2026.\"}],[\"$\",\"meta\",\"2\",{\"name\":\"referrer\",\"content\":\"no-referrer\"}],[\"$\",\"meta\",\"3\",{\"name\":\"robots\",\"content\":\"noindex, nofollow\"}],[\"$\",\"link\",\"4\",{\"data-vinext-streamed-icon\":\"$undefined\",\"rel\":\"icon\",\"href\":\"/natsuki-logo-pastel.png\",\"type\":\"$undefined\",\"sizes\":\"$undefined\",\"color\":\"$undefined\",\"media\":\"$undefined\",\"fetchPriority\":\"$undefined\"}],[\"$\",\"link\",\"5\",{\"data-vinext-streamed-icon\":\"$undefined\",\"rel\":\"apple-touch-icon\",\"href\":\"/natsuki-logo-pastel.png\",\"type\":\"$undefined\",\"sizes\":\"$undefined\",\"color\":\"$undefined\",\"media\":\"$undefined\",\"fetchPriority\":\"$undefined\"}]],[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]],[\"$\",\"$L5\",null,{\"fallback\":\"$6\",\"children\":[\"$\",\"$L7\",null,{\"fallback\":\"$6\",\"children\":[\"$\",\"$L8\",null,{\"providerId\":\"layout:/\",\"segmentMap\":{\"children\":[]},\"children\":[\"$\",\"$L9\",null,{\"id\":\"layout:/\",\"parallelSlots\":\"$undefined\",\"children\":[\"$\",\"$La\",null,{\"resetKey\":\"\",\"fallback\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"children\":[\"$\",\"$Lb\",null,{\"children\":[\"$\",\"$Lc\",null,{\"children\":[[\"$\",\"$L8\",null,{\"providerId\":\"page:/\",\"segmentMap\":{\"children\":[\"__PAGE__\"]},\"children\":[\"$\",\"$L9\",null,{\"id\":\"page:/\"}]}],null]}]}]}]}]}]}]}],null,null]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("d:I[\"22d99a28eeaf\",[],\"default\",1]\n")
+        </script>
+        <script>
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).rsc.push("1:[\"$\",\"$Ld\",null,{}]\n")
+        </script>
+        <script>
+            Object.assign(((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }), {
+                "initialCacheKind": "static"
+            });
+            ((self[Symbol.for("vinext.navigationRuntime")] ??= {
+                bootstrap: {
+                    routeManifest: null
+                },
+                functions: {}
+            }).bootstrap.rsc ??= {
+                rsc: []
+            }).done = true
+        </script>
+    </body>
 </html>
