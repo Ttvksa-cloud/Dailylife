@@ -802,7 +802,7 @@ async function saveFile(filename,data,title){
   await ask({icon:'down',title,text:'التنزيل المباشر غير متاح هنا. انسخ النص التالي واحفظه في ملف باسم '+filename,confirm:'تم',cancel:'',area:{label:filename,value:data}});
 }
 async function doExport(){
-  const {pin,...st}=db.settings;
+  const {pin,bgs,bgActive,bgDim,logos,bows,heros,...st}=db.settings;
   await saveFile(`daftar-yawmiyati-${todayKey()}.json`,JSON.stringify({app:'daftar-yawmiyati',version:2,exportedAt:new Date().toISOString(),days:db.days,fin:db.fin,care:db.care,luna:(()=>{try{return Object.fromEntries(Object.keys(localStorage).filter(k=>k.startsWith('twitch_badges')).map(k=>[k,localStorage.getItem(k)]))}catch{return {}}})(),settings:st},null,1),'نسخة احتياطية');
 }
 function doImport(){
@@ -817,9 +817,12 @@ function doImport(){
       const ok=await ask({icon:'up',title:`استرجاع ${days.length} يوماً؟`,text:clash?`${clash} من هذه الأيام موجودة عندك وسيُستبدل بها محتوى الملف. بقية أيامك تبقى كما هي.`:'ستُضاف هذه الأيام إلى دفترك. أيامك الحالية تبقى كما هي.',confirm:'استرجاع'});
       if(!ok)return;
       for(const k of days)db.days[k]=norm(j.days[k]);
-      if(j.settings&&typeof j.settings==='object'){const {pin,...st}=j.settings;Object.assign(db.settings,st)}if(j.fin&&Array.isArray(j.fin.tx))db.fin=Object.assign({tx:[],rec:[]},j.fin);if(j.care&&typeof j.care==='object')Object.assign(db.care,j.care);if(j.luna&&typeof j.luna==='object')Object.entries(j.luna).forEach(([k,v])=>{if(k.startsWith('twitch_badges')&&typeof v==='string')try{localStorage.setItem(k,v)}catch{}});
-      persist();render();
+      if(j.settings&&typeof j.settings==='object'){const {pin,bgs,bgActive,bgDim,logos,bows,heros,...st}=j.settings;Object.assign(db.settings,st)}if(j.fin&&Array.isArray(j.fin.tx))db.fin=Object.assign({tx:[],rec:[]},j.fin);if(j.care&&typeof j.care==='object')Object.assign(db.care,j.care);if(j.luna&&typeof j.luna==='object')Object.entries(j.luna).forEach(([k,v])=>{if(k.startsWith('twitch_badges')&&typeof v==='string')try{localStorage.setItem(k,v)}catch{}});
+      const saved=tryPersist();render();
+      if(!saved)await ask({icon:'info',title:'ما انحفظت البيانات',text:'مساحة التخزين في المتصفح ما كفت لحجم هذه النسخة. جرّب مسح بيانات الصور الكبيرة من الدفتر الأصلي ثم أعد النسخ الاحتياطي، أو افتح الاسترجاع من متصفح ثاني.',confirm:'حسناً',cancel:''});
+      else toast('تم استرجاع '+days.length+' يوم');
     };
+    r.onerror=()=>ask({icon:'info',title:'تعذّرت قراءة الملف',text:'الملف كبير على هذا الجهاز أو غير متاح. جرّب مرة ثانية.',confirm:'حسناً',cancel:''});
     r.readAsText(f);
   });
   document.body.appendChild(inp);inp.click();setTimeout(()=>inp.remove(),60000);
@@ -1029,7 +1032,7 @@ document.addEventListener('click',async e=>{
 /* ---------- boot ---------- */
 (()=>{const S=db.settings;let ch=0;
   if(S.logo&&!(S.logos||[]).some(x=>x.src===S.logo)){(S.logos||(S.logos=[])).push({id:'l'+uid(),src:S.logo});ch=1}
-  if(S.cover){(S.bgs||(S.bgs=[])).push({id:'b'+uid(),name:'الغلاف السابق',src:S.cover});delete S.cover;ch=1}
+  if(S.cover||S.bgs||S.bgActive||S.bgDim){delete S.cover;delete S.bgs;delete S.bgActive;delete S.bgDim;ch=1}
   if(ch)persist()})();
 route();loadWx();setInterval(loadWx,18e5);setInterval(remind,15000);remind();initPlayer();
 (async()=>{
