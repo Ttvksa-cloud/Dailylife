@@ -796,6 +796,9 @@ function setDay(k){cursor=k;needStrip=true}
 /* ---------- export / import ---------- */
 async function saveFile(filename,data,title){
   if(dl){try{await dl.save({filename,data});return}catch(e){if(e&&e.code==='declined')return}}
+  try{const type=/\.csv$/i.test(filename)?'text/csv;charset=utf-8':'application/json;charset=utf-8';
+    const bl=new Blob([/\.csv$/i.test(filename)?'\ufeff'+data:data],{type}),u=URL.createObjectURL(bl),a=document.createElement('a');
+    a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('تم تنزيل الملف: '+filename);return}catch{}
   await ask({icon:'down',title,text:'التنزيل المباشر غير متاح هنا. انسخ النص التالي واحفظه في ملف باسم '+filename,confirm:'تم',cancel:'',area:{label:filename,value:data}});
 }
 async function doExport(){
