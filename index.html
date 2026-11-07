@@ -562,7 +562,7 @@ function dayHTML(){
    <div class="arrows"><button type="button" data-act="dnav" data-n="-1" data-k="dprev" aria-label="اليوم السابق">${I('cr',18)}</button><button type="button" data-act="dnav" data-n="1" data-k="dnext" aria-label="اليوم التالي">${I('cl',18)}</button></div></div>
   <div class="overview" id="overview">${overviewHTML(d,c)}</div>
   <div class="subtabs" role="tablist">${tabs.map(([k,l,ic])=>`<button type="button" role="tab" class="${tab===k?'active':''}" aria-selected="${tab===k}" data-act="tab" data-t="${k}" data-k="tab:${k}">${I(ic,18)}${esc(l)}</button>`).join('')}</div>
-  ${fut?'<div class="notice future-note">هذا يوم قادم. يُفتح للتسجيل عندما يحين موعده.</div>':''}
+  ${fut?'<div class="notice future-note"><b>هذا يوم قادم، والتسجيل فيه مقفل لين يحين موعده.</b><br><button type="button" class="secondary" style="margin-top:10px" data-act="today" data-k="today2">العودة إلى اليوم</button></div>':''}
   <fieldset class="form-area" ${fut?'disabled':''}>${body}</fieldset>
   <div class="savebar"><button type="button" class="primary" data-act="save" data-k="save" ${fut?'disabled':''}><span>حفظ اليوم<small>التغييرات تُحفظ تلقائياً، والتأكيد يضع علامة خضراء على اليوم</small></span></button>
    <button type="button" class="secondary" data-act="clear" data-k="clear" ${fut||!db.days[cursor]?'disabled':''}>${I('trash',14)}مسح بيانات اليوم</button>
