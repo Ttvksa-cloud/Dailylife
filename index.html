@@ -128,7 +128,7 @@ input[type=time]{direction:ltr;text-align:center;font-family:Tajawal,sans-serif}
 .ev-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.ev-form #evTitle{flex:1;min-width:140px;width:auto}.ev-form input[type=time]{width:130px}.ev-form input[type=color]{width:46px;height:44px;padding:3px}
 .calendar-strip button{position:relative}.evdot{position:absolute;top:7px;left:8px;width:7px;height:7px;border-radius:50%}
 #reminders{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:60;display:grid;gap:10px;width:min(92vw,360px)}.remind{display:flex;align-items:center;gap:10px;background:rgba(30,24,54,.55);border:1px solid rgba(255,255,255,.12);border-top:4px solid var(--c);border-radius:14px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.4)}.remind b{flex:1;font-size:15px}.remind small{color:#a9a3c4}
-#ytbar{position:fixed;bottom:14px;left:14px;z-index:15;width:min(300px,calc(100vw - 28px));background:rgba(30,24,54,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:8px;box-shadow:0 8px 30px rgba(0,0,0,.4)}#ytTog{display:flex;align-items:center;gap:6px;color:#a9a3c4;font-size:13px;font-weight:700;padding:4px 6px}.yt-row{display:flex;gap:6px;margin-top:8px}.yt-row input{min-width:0;padding:8px;font-size:12px}.yt-row button{padding:8px 10px;font-size:12px;white-space:nowrap}#ytFrame iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:8px}
+#ytbar{position:fixed;bottom:14px;left:14px;z-index:15;width:min(300px,calc(100vw - 28px));background:rgba(30,24,54,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:8px;box-shadow:0 8px 30px rgba(0,0,0,.4)}#ytbar.docked{position:absolute;bottom:auto;right:auto;z-index:6;background:transparent;border:0;box-shadow:none;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none}#ytbar.docked #ytTog{display:none}#ytbar.docked .yt-row,#ytbar.docked .yt-row[hidden]{display:flex}#ytSlot{min-height:64px}#ytTog{display:flex;align-items:center;gap:6px;color:#a9a3c4;font-size:13px;font-weight:700;padding:4px 6px}.yt-row{display:flex;gap:6px;margin-top:8px}.yt-row input{min-width:0;padding:8px;font-size:12px}.yt-row button{padding:8px 10px;font-size:12px;white-space:nowrap}#ytFrame iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:8px}
 .pin-hidden{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}.pin-dots{display:flex;justify-content:center;gap:12px;margin:18px 0}.pin-dots i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(169,112,255,.4)}.pin-dots i.on{background:#9146ff;border-color:rgba(169,112,255,.4)}
 .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:260px;margin:18px auto}.keypad button{height:58px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(30,24,54,.55);font:24px 'Playfair Display',Tajawal;color:#c9a8ff;display:flex;align-items:center;justify-content:center;padding:0}.keypad button:active{background:rgba(40,30,72,0.6)}.keypad .primary{color:#fff;background:#9146ff;border-color:rgba(169,112,255,.4)}
 .set-row{display:flex;gap:10px;align-items:end}.set-row .field-label{flex:1}.chk-line{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:14px;white-space:nowrap}.chk-line input{width:auto}
@@ -304,7 +304,7 @@ const MEALS=[['b','الفطور'],['l','الغداء'],['d','العشاء'],['s'
 const STUDY_TYPES=['مراجعة','حل','حفظ','قراءة'];
 const GOALS={water:8,study:4,move:30,sleep:7};
 const SESSIONS=5, CUP_ML=250;
-const GNAMES={tasks:'العادات',study:'المذاكرة',prayer:'الصلوات',water:'الماء',food:'الوجبات',move:'الحركة',sleep:'النوم'};
+const GNAMES={tasks:'العادات',prayer:'الصلوات',water:'الماء',food:'الوجبات',move:'الحركة',sleep:'النوم'};
 const QUOTES=['خطوة صغيرة اليوم أهدأ من وعد كبير بكرة','ما يلزم تكون مثالياً، يكفي تكون مستمراً','اشرب ماءك، ورتّب فكرتك، وابدأ بأسهل مهمة','يوم هادئ مسجّل أحسن من يوم مزدحم منسي','الراحة جزء من الخطة وليست مكافأة عليها','كل علامة صح هي وعد وفّيت به لنفسك','ابدأ من حيث أنت، بالقليل الذي تقدر عليه','اللي يتكرر بهدوء يكبر بدون ضجيج'];
 
 /* ---------- state ---------- */
@@ -373,7 +373,7 @@ function compute(d){
   const done=ap.filter(([k])=>d.tasks[k]&&d.tasks[k].done).length;
   g.tasks=ap.length?done/ap.length:0;
   t.tasks=taskList().some(([k])=>d.tasks[k]&&(d.tasks[k].done||d.tasks[k].na));
-  const mn=Object.values(d.media||{}).filter(v=>String(v)!=='').length;g.study=mn>0?1:0;t.study=mn>0;
+  const mn=0;
   const pv=PRAYERS.map(([k])=>d.prayers[k]||'');const pap=pv.filter(v=>v!=='na');const pw={ontime:1,late:.5,missed:0};
   g.prayer=pap.length?pap.reduce((a,v)=>a+(pw[v]||0),0)/pap.length:0;t.prayer=pv.some(v=>v!=='');
   const ml=waterMl(d);g.water=Math.min(ml/waterGoal(),1);t.water=ml>0;
@@ -583,7 +583,7 @@ function restTab(d,c){
 function dayHTML(){
   const d=getDay(cursor),c=compute(d),dt=parseKey(cursor),fut=isFuture(cursor);
   const tabs=tabsDef();if(!tabs.some(t=>t[0]===tab))tab=tabs[0][0];
-  const body=tab==='daily'?`<div class="cards-grid">${tasksCard(d,c)}${prayerCard(d)}${mediaCard(d)}${waterCard(d)}${phoneCard(d)}${careCard()}${moneyDayCard()}</div>`:tab==='food'?foodTab(d):tab==='move'?moveTab(d,c):restTab(d,c);
+  const body=tab==='daily'?`<div class="cards-grid">${tasksCard(d,c)}${prayerCard(d)}${audioSlotCard()}${waterCard(d)}${phoneCard(d)}${careCard()}${moneyDayCard()}</div>`:tab==='food'?foodTab(d):tab==='move'?moveTab(d,c):restTab(d,c);
   const banner=!db.settings.hideBanner?`<div class="demo-banner"><strong>دفترك يُحفظ على هذا الجهاز</strong><span>كل ما تكتبه يبقى داخل هذا المتصفح فقط، ولا يراه أحد. حمّل نسخة احتياطية من الزر الجانبي بين فترة وفترة، خصوصاً قبل مسح بيانات المتصفح أو تغيير الجهاز.</span><button type="button" class="text-button" style="align-self:flex-start" data-act="hideBanner" data-k="hideBanner">فهمت، أخفِ هذه الرسالة</button></div>`:'';
   const warn=!storageOK?`<div class="notice error">المتصفح يمنع الحفظ في هذه الصفحة، لذلك لن تبقى بياناتك بعد إغلاقها. حمّل نسخة احتياطية قبل الخروج.</div>`:'';
   return `${banner}${warn}
@@ -622,7 +622,7 @@ function monthHTML(){
   const sum=f=>rec.reduce((a,x)=>a+f(x.c),0);
   const trips=sum(c=>c.trips),ml=sum(c=>c.ml),ses=sum(c=>c.sd),pOn=sum(c=>c.pOn);
   const ph=days.filter(x=>x.d&&x.d.phone!=='').map(x=>Number(x.d.phone)),avgPh=ph.length?ph.reduce((a,b)=>a+b,0)/ph.length:null;
-  const GN={tasks:nm('c_tasks'),study:nm('c_media'),prayer:nm('c_prayer'),water:nm('c_water'),food:nm('c_meals'),move:nm('c_move'),sleep:nm('c_sleep')};
+  const GN={tasks:nm('c_tasks'),prayer:nm('c_prayer'),water:nm('c_water'),food:nm('c_meals'),move:nm('c_move'),sleep:nm('c_sleep')};
   const gs=Object.keys(GN).map(g=>[GN[g],N?pct(rec.reduce((a,x)=>a+x.c.g[g],0)/N):0]);
   const mdt=new Date(y,m,1),fm=finMonth(y,m),R=yearRows(y);
   const msg=!N?'ابدأ بتسجيل أول يوم، وتظهر هنا إحصائيات الشهر تلقائياً.':avg>=.75?'شهر قوي. حافظ على نفس الإيقاع.':avg>=.5?'شهر متوازن. اختر قسماً واحداً وارفعه الأسبوع القادم.':'البداية هي الأصعب. سجّل شيئاً صغيراً كل يوم وراح يتغير الرقم.';
@@ -638,7 +638,7 @@ function monthHTML(){
    <div class="legend"><span><i></i>يوم مؤكَّد الحفظ</span><span><i></i>مسودة</span></div></section>
   <div class="cards-grid"><section class="card pink">${head('bars','متوسط كل قسم','CATEGORIES')}<div class="group-scores">${gs.map(([n,p])=>`<div><div><span>${esc(n)}</span><span>${p}%</span></div><progress max="100" value="${p}"></progress></div>`).join('')}</div></section>
    <section class="card pink">${head('star','تفاصيل الشهر','DETAILS')}<div class="month-details">
-    <div>${I('drop',18)}${esc(nm('c_water'))}<b>${(ml/1000).toFixed(1)} لتر</b></div><div>${I('book',18)}${esc(nm('c_media'))}<b>${ses}</b></div><div>${I('star',18)}صلوات في وقتها<b>${pOn}</b></div><div>${I('gym',18)}${esc(nm('c_move'))}<b>${trips}</b></div><div>${I('moon',18)}ليالٍ مسجّلة<b>${sl.length}</b></div><div>${I('clock',18)}متوسط الهاتف<b>${avgPh==null?'—':hrs(avgPh)+' س'}</b></div><div>${I('star',18)}مصروف الشهر<b>${fmt(fm.out)}</b></div></div></section></div>
+    <div>${I('drop',18)}${esc(nm('c_water'))}<b>${(ml/1000).toFixed(1)} لتر</b></div><div>${I('star',18)}صلوات في وقتها<b>${pOn}</b></div><div>${I('gym',18)}${esc(nm('c_move'))}<b>${trips}</b></div><div>${I('moon',18)}ليالٍ مسجّلة<b>${sl.length}</b></div><div>${I('clock',18)}متوسط الهاتف<b>${avgPh==null?'—':hrs(avgPh)+' س'}</b></div><div>${I('star',18)}مصروف الشهر<b>${fmt(fm.out)}</b></div></div></section></div>
   <section class="card pink" style="margin-top:20px"><div class="section-title"><h3>ملخص سنة ${y}</h3><span>مرتبط بيومياتك تلقائياً</span></div><div class="tbl"><table><tr><th>الشهر</th><th>أيام</th><th>الإنجاز</th><th>ماء (لتر)</th><th>${esc(nm('c_move'))}</th><th>مصروف</th></tr>${R.map(r=>`<tr><td>${F.mo.format(new Date(y,r.m,1))}</td><td>${r.n}</td><td>${r.n?pct(r.avg)+'%':'—'}</td><td>${(r.ml/1000).toFixed(1)}</td><td>${r.tr}</td><td>${fmt(r.f.out)}</td></tr>`).join('')}</table></div></section>
   <div class="quote">${msg}</div>
   <div class="mobile-tools"><button type="button" class="secondary" data-act="export" data-k="mb-export2">${I('down',14)}نسخة احتياطية</button></div>`;
@@ -692,7 +692,7 @@ function settingsHTML(){
   return `<div class="monthly-head"><h2>تخصيص الدفتر</h2></div><div class="cards-grid">
   <section class="card pink">${logoCard(S)}</section>
   <section class="card lavender">${head('ok','القوائم','TABS')}${[['daily','t_daily'],['food','t_food'],['move','t_move'],['rest','t_rest']].map(([t,k])=>`<div class="set-row">${inp(k,'اسم القائمة')}<label class="chk-line"><input type="checkbox" data-f="tabshow:${t}" ${(S.hideTabs||[]).includes(t)?'':'checked'}>إظهار</label></div>`).join('')}</section>
-  <section class="card peach">${head('book','أسماء البطاقات','CARDS')}${['c_tasks','c_prayer','c_media','c_water','c_phone','c_care','c_money','c_meals','c_move','c_sleep','c_notes','nav_luna'].map(k=>inp(k,DEF[k])).join('')}<span class="hint">اترك الخانة فاضية للرجوع للاسم الأصلي.</span></section>
+  <section class="card peach">${head('book','أسماء البطاقات','CARDS')}${['c_tasks','c_prayer','c_water','c_phone','c_care','c_money','c_meals','c_move','c_sleep','c_notes','nav_luna'].map(k=>inp(k,DEF[k])).join('')}<span class="hint">اترك الخانة فاضية للرجوع للاسم الأصلي.</span></section>
   <section class="card mint">${head('food','الوجبات والأهداف','GOALS')}${mealList().map(([k,l])=>`<div class="set-row"><label class="field-label">وجبة<input data-f="mlabel:${k}" value="${esc(l)}" maxlength="30"></label><button type="button" class="rm-task" data-act="mealrm" data-id="${k}" data-k="mealrm:${k}" aria-label="حذف">${I('x',14)}</button></div>`).join('')}
    <div class="add-row"><input id="mealNew" maxlength="30" placeholder="وجبة جديدة"><button type="button" class="secondary" data-act="mealadd" data-k="mealadd">${I('plus',14)}إضافة</button></div>
    ${numField('waterGoal','هدف الماء اليومي','goal:waterGoal',waterGoal(),'مل','max="10000"')}${numField('phoneGoal','هدف الهاتف (أقصى)','goal:phoneGoal',phoneGoal(),'ساعة','max="24" step="0.5"')}</section>${bgCard(S)}</div>`;
@@ -753,7 +753,7 @@ function render(){applyBg();
   ct.innerHTML=(view==='day'?dayHTML():view==='month'?monthHTML():view==='money'?moneyHTML():view==='luna'?lunaHTML():settingsHTML())+`<footer>${I('heart',12)}دفتر يومياتي · بياناتك تبقى على جهازك</footer>`;
   if(enterMode){void ct.offsetWidth;ct.classList.add(enterMode==='all'?'enter':'enter-cards');enterMode=null}
   if(fk){const n=document.querySelector(`[data-k="${CSS.escape(fk)}"]`);if(n){try{n.focus({preventScroll:true})}catch{}}}
-  window.scrollTo(0,sy);
+  window.scrollTo(0,sy);dockPlayer();
   if(needStrip&&view==='day'){needStrip=false;const c=$('.calendar-strip .current');if(c){const s=$('#strip');if(s)s.scrollLeft+=c.getBoundingClientRect().left-s.getBoundingClientRect().left-(s.clientWidth-c.clientWidth)/2}}
   animRing(oldP);applyFx();tick();
 }
@@ -820,8 +820,8 @@ function doImport(){
 }
 async function doCsv(){
   const {y,m}=mcur,days=monthData(y,m).filter(x=>x.has);
-  const rows=[['التاريخ','الإنجاز %','عادات منجزة','مانهوات ومسلسلات','صلوات في وقتها','ماء مل','مشاوير','ساعات نوم','ساعات الهاتف']];
-  for(const x of days){const d=x.d,c=x.c;rows.push([x.k,pct(c.score),c.done,c.sd,c.pOn,c.ml,c.trips,c.sh==null?'':hrs(c.sh),d.phone])}
+  const rows=[['التاريخ','الإنجاز %','عادات منجزة','صلوات في وقتها','ماء مل','مشاوير','ساعات نوم','ساعات الهاتف']];
+  for(const x of days){const d=x.d,c=x.c;rows.push([x.k,pct(c.score),c.done,c.pOn,c.ml,c.trips,c.sh==null?'':hrs(c.sh),d.phone])}
   const csv='﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   await saveFile(`yawmiyati-${y}-${pad(m+1)}.csv`,csv,'تصدير الشهر');
 }
@@ -837,12 +837,20 @@ function ytParse(u){try{const x=new URL(u.trim());let id='';const list=x.searchP
   if(x.hostname.includes('youtu.be'))id=x.pathname.slice(1);else if(/\/(shorts|embed|live)\//.test(x.pathname))id=x.pathname.split('/')[2];else id=x.searchParams.get('v')||'';
   if(!/^[\w-]{6,15}$/.test(id))id='';if(!id&&!list)return null;
   return 'https://www.youtube.com/embed/'+(id||'videoseries')+'?autoplay=1&playsinline=1'+(list?'&list='+encodeURIComponent(list):'')}catch{return null}}
+function audioSlotCard(){return `<section class="card pink wide">${head('vol','صوتيات','AUDIO')}<div id="ytSlot"></div></section>`}
+function dockPlayer(){const bar=$('#ytbar');if(!bar)return;const slot=$('#ytSlot');
+  if(!slot||locked){bar.classList.remove('docked');bar.style.cssText=locked?'display:none':'';return}
+  const r=slot.getBoundingClientRect(),w=Math.min(r.width,520);
+  bar.classList.add('docked');bar.style.display='';
+  bar.style.width=w+'px';bar.style.top=(r.top+window.scrollY)+'px';bar.style.left=(r.right-w+window.scrollX)+'px';
+  const h=bar.offsetHeight;if(h&&Math.abs((parseFloat(slot.style.height)||0)-h)>1)slot.style.height=h+'px'}
 function initPlayer(){const d=document.createElement('div');d.id='ytbar';
   d.innerHTML=`<button type="button" id="ytTog">${I('vol',18)}<span>صوتية</span></button><div id="ytBox"><div class="yt-row"><input id="ytUrl" dir="ltr" placeholder="رابط يوتيوب (موسيقى أو بودكاست)" value="${esc(db.settings.yt||'')}"><button type="button" class="primary" id="ytGo">تشغيل</button><button type="button" class="secondary" id="ytStop">إيقاف</button></div><div id="ytFrame"></div></div>`;
   document.body.appendChild(d);
   $('#ytTog').onclick=()=>{const b=$('.yt-row');b.hidden=!b.hidden};
   $('#ytGo').onclick=()=>{const v=$('#ytUrl').value,u=ytParse(v);if(!u){toast('الرابط غير صالح، الصق رابط يوتيوب');return}db.settings.yt=v;persist();$('#ytFrame').innerHTML=`<iframe src="${u}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="مشغّل يوتيوب"></iframe>`};
-  $('#ytStop').onclick=()=>{$('#ytFrame').innerHTML=''}}
+  $('#ytStop').onclick=()=>{$('#ytFrame').innerHTML=''};
+  window.addEventListener('resize',dockPlayer);setInterval(dockPlayer,400);dockPlayer()}
 function loadImg(file,mx,type,q,cb){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL(type,q))};im.onerror=()=>toast('تعذّرت قراءة الصورة');im.src=String(r.result)};r.readAsDataURL(file)}
 function imgPick(id,file){if(id!=='logo'&&id!=='bow'&&id!=='hero')return;const S=db.settings,L=S[id+'s']||(S[id+'s']=[]);
   loadImg(file,id==='hero'?640:256,id==='hero'?'image/jpeg':'image/png',id==='hero'?.8:1,src=>{const prev=S[id],had=L.find(x=>x.src===src);let added=null;
