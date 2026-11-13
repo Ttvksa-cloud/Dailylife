@@ -583,7 +583,7 @@ function restTab(d,c){
 function dayHTML(){
   const d=getDay(cursor),c=compute(d),dt=parseKey(cursor),fut=isFuture(cursor);
   const tabs=tabsDef();if(!tabs.some(t=>t[0]===tab))tab=tabs[0][0];
-  const body=tab==='daily'?`<div class="cards-grid">${tasksCard(d,c)}${prayerCard(d)}${audioSlotCard()}${waterCard(d)}${phoneCard(d)}${careCard()}${moneyDayCard()}</div>`:tab==='food'?foodTab(d):tab==='move'?moveTab(d,c):restTab(d,c);
+  const body=tab==='daily'?`<div class="cards-grid">${tasksCard(d,c)}${prayerCard(d)}${audioSlotCard()}${waterCard(d)}${phoneCard(d)}${careCard()}</div>`:tab==='food'?foodTab(d):tab==='move'?moveTab(d,c):restTab(d,c);
   const banner=!db.settings.hideBanner?`<div class="demo-banner"><strong>دفترك يُحفظ على هذا الجهاز</strong><span>كل ما تكتبه يبقى داخل هذا المتصفح فقط، ولا يراه أحد. حمّل نسخة احتياطية من الزر الجانبي بين فترة وفترة، خصوصاً قبل مسح بيانات المتصفح أو تغيير الجهاز.</span><button type="button" class="text-button" style="align-self:flex-start" data-act="hideBanner" data-k="hideBanner">فهمت، أخفِ هذه الرسالة</button></div>`:'';
   const warn=!storageOK?`<div class="notice error">المتصفح يمنع الحفظ في هذه الصفحة، لذلك لن تبقى بياناتك بعد إغلاقها. حمّل نسخة احتياطية قبل الخروج.</div>`:'';
   return `${banner}${warn}
